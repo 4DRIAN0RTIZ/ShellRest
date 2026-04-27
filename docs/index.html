@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShellRest — Pure Bash REST Framework</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <pre>
+ ____  _          _ _ ____           _
+/ ___|| |__   ___| | |  _ \ ___  ___| |_
+\___ \| '_ \ / _ \ | | |_) / _ \/ __| __|
+ ___) | | | |  __/ | |  _ &lt; __/\__ \ |_
+|____/|_| |_|\___|_|_|_| \_\___||___/\__|</pre>
+    <div class="sidebar-version">v1.0.0 · pure bash</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">getting started</div>
+    <a class="nav-item active" href="#overview"><span class="nav-prefix">01</span>Overview</a>
+    <a class="nav-item" href="#quickstart"><span class="nav-prefix">02</span>Quick Start</a>
+    <a class="nav-item" href="#structure"><span class="nav-prefix">03</span>Project Structure</a>
+    <a class="nav-item" href="#config"><span class="nav-prefix">04</span>Configuration</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">core</div>
+    <a class="nav-item" href="#routing"><span class="nav-prefix">05</span>Routing</a>
+    <a class="nav-item" href="#http"><span class="nav-prefix">06</span>HTTP Responses</a>
+    <a class="nav-item" href="#database"><span class="nav-prefix">07</span>Database</a>
+    <a class="nav-item" href="#validation"><span class="nav-prefix">08</span>Validation</a>
+    <a class="nav-item" href="#middleware"><span class="nav-prefix">09</span>Middleware</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">schema</div>
+    <a class="nav-item" href="#migrations"><span class="nav-prefix">10</span>Migrations</a>
+    <a class="nav-item" href="#schema"><span class="nav-prefix">11</span>Schema Builder</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-title">reference</div>
+    <a class="nav-item" href="#utils"><span class="nav-prefix">12</span>JSON Utilities</a>
+    <a class="nav-item" href="#example"><span class="nav-prefix">13</span>Full Example</a>
+    <a class="nav-item" href="#apiref"><span class="nav-prefix">14</span>API Reference</a>
+    <a class="nav-item" href="#roadmap"><span class="nav-prefix">15</span>Roadmap</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════
+     CONTENT
+════════════════════════════════════════════════════ -->
+<main id="content">
+
+  <!-- HERO -->
+  <div id="hero">
+    <pre class="hero-ascii">
+ ____  _          _ _ ____           _
+/ ___|| |__   ___| | |  _ \ ___  ___| |_
+\___ \| '_ \ / _ \ | | |_) / _ \/ __| __|
+ ___) | | | |  __/ | |  _ &lt; __/\__ \ |_
+|____/|_| |_|\___|_|_|_| \_\___||___/\__|</pre>
+
+    <div class="hero-tagline">Pure Bash REST API Framework</div>
+    <div class="hero-desc">
+      ShellRest es un framework HTTP escrito completamente en Bash 5+.
+      Sin dependencias de runtime — solo <code>bash</code>, <code>sqlite3</code>, <code>jq</code> y <code>nc</code>.
+      Router con path params, ORM-like helpers, sistema de migraciones, middleware pipeline.
+    </div>
+
+    <div class="badge-row">
+      <span class="badge badge-green">v1.0.0</span>
+      <span class="badge badge-amber">Bash 5+</span>
+      <span class="badge badge-cyan">SQLite 3+</span>
+      <span class="badge badge-purple">MIT License</span>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────
+       01 OVERVIEW
+  ────────────────────────────────── -->
+  <section id="overview">
+    <h2>Overview</h2>
+
+    <p>ShellRest convierte un script Bash en un servidor HTTP funcional. Cada request dispara
+    un proceso hijo que sourcéa el framework, matchea la ruta, ejecuta el handler y devuelve
+    una respuesta HTTP/1.1 completa.</p>
+
+    <p><strong style="color:var(--text-bright)">Stack mínimo requerido:</strong></p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">bash</span>
+      </div>
+      <div class="term-body">
+        <span class="cmd">bash --version | head -1</span>
+        <span class="out">GNU bash, version 5.3.9(1)-release</span>
+        <span class="cmd">sqlite3 --version</span>
+        <span class="out">3.52.0 2025-01-09</span>
+        <span class="cmd">jq --version</span>
+        <span class="out">jq-1.7.1</span>
+        <span class="cmd">nc -h 2&gt;&amp;1 | head -1</span>
+        <span class="out">OpenBSD netcat</span>
+      </div>
+    </div>
+
+    <p><strong style="color:var(--text-bright)">Flujo de una request:</strong></p>
+
+    <div class="pipeline">
+      <span class="pipe-step">nc (acepta TCP)</span>
+      <span class="pipe-arrow">→</span>
+      <span class="pipe-step">api.sh (fork)</span>
+      <span class="pipe-arrow">→</span>
+      <span class="pipe-step">middleware pipeline</span>
+      <span class="pipe-arrow">→</span>
+      <span class="pipe-step success">route_request()</span>
+      <span class="pipe-arrow">→</span>
+      <span class="pipe-step route">handler()</span>
+      <span class="pipe-arrow">→</span>
+      <span class="pipe-step">http_response()</span>
+    </div>
+
+    <div class="callout callout-info">
+      <strong>INFO</strong>Cada request es un proceso Bash independiente. No hay estado compartido entre requests — todo estado persiste en SQLite.
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────
+       02 QUICK START
+  ────────────────────────────────── -->
+  <section id="quickstart">
+    <h2>Quick Start</h2>
+
+    <h3>Clonar e inicializar</h3>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">bash</span>
+        <button class="term-copy" onclick="copyCode(this)">copy</button>
+      </div>
+      <div class="term-body">
+        <pre><code class="language-bash">git clone https://github.com/tu-usuario/shellrest.git
+cd shellrest
+
+# Crear base de datos y ejecutar migraciones
+./migrate.sh
+
+# Arrancar el servidor (puerto 8082 por defecto)
+./server.sh</code></pre>
+      </div>
+    </div>
+
+    <h3>Primera request</h3>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">bash</span>
+        <button class="term-copy" onclick="copyCode(this)">copy</button>
+      </div>
+      <div class="term-body">
+        <pre><code class="language-bash"># GET /users
+curl http://localhost:8082/users
+
+# POST /users
+curl -X POST http://localhost:8082/users \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alice","email":"alice@example.com"}'
+
+# GET /users/1
+curl http://localhost:8082/users/1
+
+# DELETE /users/1
+curl -X DELETE http://localhost:8082/users/1</code></pre>
+      </div>
+    </div>
+
+    <h3>Crear una ruta nueva en 60 segundos</h3>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">routes/health.sh</span>
+        <button class="term-copy" onclick="copyCode(this)">copy</button>
+      </div>
+      <div class="term-body">
+        <pre><code class="language-bash">#!/bin/bash
+
+register_route "GET" "/health" "get_health"
+
+get_health() {
+    http_response "200 OK" "application/json" \
+        '{"status":"ok","version":"1.0.0"}'
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="callout callout-success">
+      <strong>TIP</strong>ShellRest carga automáticamente todos los <code>*.sh</code> dentro de <code>routes/</code>. No necesitas registrar el archivo.
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────
+       03 PROJECT STRUCTURE
+  ────────────────────────────────── -->
+  <section id="structure">
+    <h2>Project Structure</h2>
+
+    <div class="tree">
+<span class="tree-dir">shellrest/</span>
+<span class="tree-file">├── <span class="tree-key">server.sh</span>         <span class="tree-desc"># Servidor TCP — arranca nc en loop</span></span>
+<span class="tree-file">├── <span class="tree-key">api.sh</span>            <span class="tree-desc"># Entry point por request — parsea HTTP, ejecuta pipeline</span></span>
+<span class="tree-file">├── <span class="tree-key">migrate.sh</span>        <span class="tree-desc"># Runner de migraciones</span></span>
+<span class="tree-file">├── <span class="tree-key">make_migration.sh</span> <span class="tree-desc"># Generador de archivos de migración</span></span>
+<span class="tree-file">├── .env               <span class="tree-desc"># Variables de entorno (opcional)</span></span>
+<span class="tree-dir">├── shellrest/         <span class="tree-desc"># Core del framework</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">config.sh</span>     <span class="tree-desc"># load_config, get_config, debug_log</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">http.sh</span>       <span class="tree-desc"># http_response, parse_query_string, get_header</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">router.sh</span>     <span class="tree-desc"># register_route, route_request, match_route_pattern</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">database.sh</span>   <span class="tree-desc"># execute_query, escape_sql</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">middleware.sh</span> <span class="tree-desc"># add_middleware, run_middleware, middlewares built-in</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">migration.sh</span>  <span class="tree-desc"># Schema builder + migration tracking</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">utils.sh</span>      <span class="tree-desc"># db_select/insert/update/delete/join, json_error</span></span>
+<span class="tree-file">│   └── <span class="tree-key">validation.sh</span><span class="tree-desc"># validate_json, validate_email, validate_integer…</span></span>
+<span class="tree-dir">├── routes/            <span class="tree-desc"># Handlers de rutas (carga automática)</span></span>
+<span class="tree-file">│   ├── root.sh</span>
+<span class="tree-file">│   ├── users.sh</span>
+<span class="tree-file">│   ├── products.sh</span>
+<span class="tree-file">│   └── orders.sh</span>
+<span class="tree-dir">└── migrations/        <span class="tree-desc"># Archivos de migración (ordenados por timestamp)</span></span>
+<span class="tree-file">    ├── 20250915_220501_users.sh</span>
+<span class="tree-file">    ├── 20250915_223331_products.sh</span>
+<span class="tree-file">    └── 20250915_223649_orders.sh</span>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────
+       04 CONFIGURATION
+  ────────────────────────────────── -->
+  <section id="config">
+    <h2>Configuration</h2>
+
+    <p>ShellRest lee configuración desde <code>.env</code> en la raíz del proyecto.
+    Todas las variables son opcionales — si no existen, se usan los defaults.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">.env</span>
+        <button class="term-copy" onclick="copyCode(this)">copy</button>
+      </div>
+      <div class="term-body">
+        <pre><code class="language-bash">API_PORT=8082
+API_HOST=localhost
+DB_FILE=/ruta/absoluta/database.db
+LOG_FILE=/var/log/shellrest/access.log
+DEBUG=false</code></pre>
+      </div>
+    </div>
+
+    <table class="env-table">
+      <thead>
+        <tr>
+          <th>Variable</th>
+          <th>Default</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="env-key">API_PORT</td>
+          <td class="env-default">8082</td>
+          <td class="env-desc">Puerto TCP donde escucha el servidor</td>
+        </tr>
+        <tr>
+          <td class="env-key">API_HOST</td>
+          <td class="env-default">localhost</td>
+          <td class="env-desc">Host del servidor</td>
+        </tr>
+        <tr>
+          <td class="env-key">DB_FILE</td>
+          <td class="env-default">sqlite_data.db</td>
+          <td class="env-desc">Ruta al archivo SQLite. Relativa a la raíz del proyecto</td>
+        </tr>
+        <tr>
+          <td class="env-key">LOG_FILE</td>
+          <td class="env-default">access.log</td>
+          <td class="env-desc">Ruta al log de acceso escrito por <code>logging_middleware</code></td>
+        </tr>
+        <tr>
+          <td class="env-key">DEBUG</td>
+          <td class="env-default">false</td>
+          <td class="env-desc">Habilita <code>debug_log()</code> — escribe a stderr</td>
+        </tr>
+        <tr>
+          <td class="env-key">CORS_ORIGIN</td>
+          <td class="env-default">*</td>
+          <td class="env-desc">Valor del header <code>Access-Control-Allow-Origin</code></td>
+        </tr>
+        <tr>
+          <td class="env-key">CORS_METHODS</td>
+          <td class="env-default">GET, POST, PUT, DELETE, OPTIONS</td>
+          <td class="env-desc">Métodos HTTP permitidos por CORS</td>
+        </tr>
+        <tr>
+          <td class="env-key">CORS_HEADERS</td>
+          <td class="env-default">Content-Type, Authorization</td>
+          <td class="env-desc">Headers permitidos por CORS</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>API de configuración</h3>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">load_config</span>
+        <span class="fn-sig">() → void</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Carga el archivo <code>.env</code> y exporta todas las variables con sus defaults. Se llama automáticamente en <code>api.sh</code> y <code>server.sh</code>.</div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">get_config</span>
+        <span class="fn-sig">(key: string) → string</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Retorna el valor de una clave de configuración por nombre.</div>
+        <table class="param-table">
+          <thead><tr><th>Param</th><th>Tipo</th><th>Valores válidos</th></tr></thead>
+          <tbody>
+            <tr><td class="param-name">key</td><td class="param-type">string</td><td class="param-desc"><code>port</code> · <code>host</code> · <code>db_file</code> · <code>log_file</code> · <code>debug</code></td></tr>
+          </tbody>
+        </table>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">PORT=$(get_config "port")    # "8082"
+DB=$(get_config "db_file")   # "/ruta/a/sqlite_data.db"</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">debug_log</span>
+        <span class="fn-sig">(...args) → void</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Escribe a stderr solo cuando <code>DEBUG=true</code>. No tiene efecto en producción.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">debug_log "procesando user_id=$user_id"
+# [DEBUG] procesando user_id=42  (solo si DEBUG=true)</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────
+       05 ROUTING
+  ────────────────────────────────── -->
+  <section id="routing">
+    <h2>Routing</h2>
+
+    <p>El router usa arrays asociativos de Bash para mapear <code>METHOD PATH</code> → función handler.
+    Soporta rutas exactas y rutas con path parameters (<code>{param}</code>).</p>
+
+    <h3>register_route</h3>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">register_route</span>
+        <span class="fn-sig">(method, pattern, handler)</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Registra una ruta asociando un método HTTP y un patrón de path con una función Bash.</div>
+        <table class="param-table">
+          <thead><tr><th>Param</th><th>Tipo</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td class="param-name">method</td><td class="param-type">string</td><td class="param-desc"><code>GET</code> · <code>POST</code> · <code>PUT</code> · <code>PATCH</code> · <code>DELETE</code></td></tr>
+            <tr><td class="param-name">pattern</td><td class="param-type">string</td><td class="param-desc">Path con soporte para <code>{param}</code> y wildcard <code>*</code></td></tr>
+            <tr><td class="param-name">handler</td><td class="param-type">string</td><td class="param-desc">Nombre de la función Bash que maneja la request</td></tr>
+          </tbody>
+        </table>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">routes/users.sh</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+          <div class="term-body">
+            <pre><code class="language-bash">register_route "GET"    "/users"            "get_users"
+register_route "POST"   "/users"            "post_users"
+register_route "GET"    "/users/{id}"       "get_user"
+register_route "PUT"    "/users/{id}"       "put_user"
+register_route "DELETE" "/users/{id}"       "delete_user"
+register_route "GET"    "/users/{id}/posts" "get_user_posts"</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Path Parameters</h3>
+
+    <p>Los segmentos entre llaves <code>{nombre}</code> en el patrón se extraen automáticamente
+    y se pasan al handler como argumentos posicionales en el orden en que aparecen en el path.</p>
+
+    <div class="term">
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">path params</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+      <div class="term-body">
+        <pre><code class="language-bash">register_route "GET" "/users/{id}" "get_user"
+
+get_user() {
+    local id="$1"          # PATH_PARAMS["id"]
+    # ...
+}
+
+# Múltiples params
+register_route "GET" "/users/{user_id}/orders/{order_id}" "get_user_order"
+
+get_user_order() {
+    local user_id="$1"     # primer param
+    local order_id="$2"    # segundo param
+    # ...
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <strong>INFO</strong>El array global <code>PATH_PARAMS</code> también está disponible: <code>${PATH_PARAMS["id"]}</code>. Los args posicionales son más convenientes para la mayoría de los casos.
+    </div>
+
+    <h3>Query String</h3>
+
+    <p>Los query params se parsean con <code>parse_query_string</code> y se exportan como variables
+    con prefijo <code>QUERY_</code>.</p>
+
+    <div class="term">
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">query string</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+      <div class="term-body">
+        <pre><code class="language-bash"># Request: GET /users?page=2&limit=10
+
+# api.sh ya parsea el query string automáticamente
+# En tu handler:
+
+get_users() {
+    local page="${QUERY_page:-1}"
+    local limit="${QUERY_limit:-20}"
+
+    local result
+    result=$(execute_query \
+        "SELECT * FROM users LIMIT $limit OFFSET $(( (page-1) * limit ));" json)
+    http_response "200 OK" "application/json" "$result"
+}</code></pre>
+      </div>
+    </div>
+
+    <h3>Headers</h3>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">get_header</span>
+        <span class="fn-sig">(header_name: string) → string</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Busca un header HTTP por nombre (case-insensitive) en la request actual. Retorna vacío si no existe.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">token=$(get_header "Authorization")
+# "Bearer eyJhbGciOiJIUzI1NiJ9..."
+
+content_type=$(get_header "Content-Type")
+# "application/json"</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>load_routes</h3>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">load_routes</span>
+        <span class="fn-sig">(dir?: string = "routes") → void</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Sourcéa todos los <code>*.sh</code> dentro del directorio especificado. Se llama automáticamente en <code>api.sh</code>. Cada archivo puede registrar las rutas que quiera.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────
+       06 HTTP RESPONSES
+  ────────────────────────────────── -->
+  <section id="http">
+    <h2>HTTP Responses</h2>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">http_response</span>
+        <span class="fn-sig">(status, content_type, body)</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Escribe una respuesta HTTP/1.1 completa a stdout, incluyendo headers CORS automáticos y <code>Content-Length</code> calculado.</div>
+        <table class="param-table">
+          <thead><tr><th>Param</th><th>Tipo</th><th>Ejemplos</th></tr></thead>
+          <tbody>
+            <tr><td class="param-name">status</td><td class="param-type">string</td><td class="param-desc"><code>"200 OK"</code> · <code>"201 Created"</code> · <code>"400 Bad Request"</code> · <code>"404 Not Found"</code> · <code>"500 Internal Server Error"</code></td></tr>
+            <tr><td class="param-name">content_type</td><td class="param-type">string</td><td class="param-desc"><code>"application/json"</code> · <code>"text/plain"</code> · <code>"text/html"</code></td></tr>
+            <tr><td class="param-name">body</td><td class="param-type">string</td><td class="param-desc">Cuerpo de la respuesta</td></tr>
+          </tbody>
+        </table>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplos</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+          <div class="term-body">
+            <pre><code class="language-bash"># 200 con JSON
+http_response "200 OK" "application/json" '{"id":1,"name":"Alice"}'
+
+# 201 Created
+http_response "201 Created" "application/json" "$new_resource"
+
+# 204 No Content (body vacío)
+http_response "204 No Content" "application/json" ""
+
+# 400 Bad Request
+http_response "400 Bad Request" "application/json" \
+    "$(json_error "username is required")"
+
+# 404 Not Found
+http_response "404 Not Found" "application/json" \
+    "$(json_error "User not found")"
+
+# 401 Unauthorized
+http_response "401 Unauthorized" "application/json" \
+    "$(json_error "Authentication required")"
+
+# 500 Internal Server Error
+http_response "500 Internal Server Error" "application/json" \
+    "$(json_error "Unexpected error")"</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Helpers de respuesta</h3>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">json_error</span>
+        <span class="fn-sig">(message: string) → string</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Retorna un JSON de error estándar: <code>{"error":"message"}</code></div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">json_error "User not found"
+# {"error":"User not found"}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">json_success</span>
+        <span class="fn-sig">(message: string) → string</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Retorna un JSON de éxito estándar: <code>{"message":"..."}</code></div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">json_success "Resource deleted"
+# {"message":"Resource deleted"}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Headers CORS</h3>
+
+    <p>Todos los headers CORS se inyectan automáticamente en cada llamada a <code>http_response</code>.
+    Se controlan desde <code>.env</code>:</p>
+
+    <div class="term">
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">.env</span></div>
+      <div class="term-body">
+        <pre><code class="language-bash">CORS_ORIGIN=https://mi-frontend.com
+CORS_METHODS=GET, POST, PUT, DELETE
+CORS_HEADERS=Content-Type, Authorization, X-Api-Key</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────
+       07 DATABASE
+  ────────────────────────────────── -->
+  <section id="database">
+    <h2>Database</h2>
+
+    <p>ShellRest usa SQLite vía CLI (<code>sqlite3</code>). El módulo <code>utils.sh</code> provee
+    helpers de alto nivel sobre <code>execute_query</code>. Todo retorna JSON por defecto.</p>
+
+    <h3>Queries básicos</h3>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">db_select</span>
+        <span class="fn-sig">(table, fields?, where?, format?)</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Ejecuta un SELECT y retorna el resultado. Formato JSON por defecto.</div>
+        <table class="param-table">
+          <thead><tr><th>Param</th><th>Default</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td class="param-name">table</td><td class="param-opt">—</td><td class="param-desc">Nombre de la tabla</td></tr>
+            <tr><td class="param-name">fields</td><td class="param-opt">*</td><td class="param-desc">Columnas a seleccionar</td></tr>
+            <tr><td class="param-name">where</td><td class="param-opt">""</td><td class="param-desc">Cláusula WHERE (sin la palabra WHERE)</td></tr>
+            <tr><td class="param-name">format</td><td class="param-opt">json</td><td class="param-desc"><code>json</code> · <code>csv</code> · <code>table</code></td></tr>
+          </tbody>
+        </table>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+          <div class="term-body">
+            <pre><code class="language-bash"># SELECT * FROM users
+db_select "users"
+
+# SELECT id, username, email FROM users
+db_select "users" "id, username, email"
+
+# SELECT id, username FROM users WHERE id = 5
+db_select "users" "id, username" "id = 5"
+
+# SELECT * FROM users WHERE is_active = 1 (en CSV)
+db_select "users" "*" "is_active = 1" "csv"</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">db_insert</span>
+        <span class="fn-sig">(table, fields, values)</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Ejecuta un INSERT. Usar <code>safe_sql_string()</code> para escapar valores de texto.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+          <div class="term-body">
+            <pre><code class="language-bash">db_insert "users" "username, email" \
+    "$(safe_sql_string "$username"), $(safe_sql_string "$email")"
+
+# Obtener el ID del insert
+id=$(db_get_last_insert_id)</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">db_update</span>
+        <span class="fn-sig">(table, set_clause, where_clause)</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Ejecuta un UPDATE. Verificar <code>db_get_changes()</code> para saber si afectó filas.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+          <div class="term-body">
+            <pre><code class="language-bash">db_update "users" \
+    "username = $(safe_sql_string "$username"), email = $(safe_sql_string "$email")" \
+    "id = $id"
+
+changes=$(db_get_changes)
+if [ "${changes:-0}" -gt 0 ]; then
+    http_response "200 OK" "application/json" "$(db_select "users" "*" "id=$id")"
+else
+    http_response "404 Not Found" "application/json" "$(json_error "Not found")"
+fi</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">db_delete</span>
+        <span class="fn-sig">(table, where_clause)</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Ejecuta un DELETE. Verificar <code>db_get_changes()</code> para confirmar que algo fue eliminado.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">db_delete "users" "id = $id"
+
+changes=$(db_get_changes)
+[ "${changes:-0}" -gt 0 ] \
+    && http_response "204 No Content" "application/json" "" \
+    || http_response "404 Not Found" "application/json" "$(json_error "Not found")"</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Conteo y existencia</h3>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">db_count</span>
+        <span class="fn-sig">(table, where?) → number</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Retorna el número de filas que cumplen la condición.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">total=$(db_count "users")                    # total de users
+activos=$(db_count "users" "is_active = 1")  # solo activos</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">db_exists</span>
+        <span class="fn-sig">(table, where) → bool</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Retorna 0 (true) si existe al menos una fila que cumpla la condición, 1 (false) si no.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">if db_exists "users" "email = $(safe_sql_string "$email")"; then
+    http_response "409 Conflict" "application/json" \
+        "$(json_error "Email already registered")"
+    return
+fi</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>JOINs</h3>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">db_inner_join</span>
+        <span class="fn-sig">(select, table1, table2, on, where?, order?, format?)</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">INNER JOIN entre dos tablas.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+          <div class="term-body">
+            <pre><code class="language-bash">result=$(db_inner_join \
+    "o.id, u.username, p.name AS product, o.quantity" \
+    "orders o" \
+    "users u" \
+    "u.id = o.user_id" \
+    "o.id = $id" \
+    "o.id DESC"
+)</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">db_left_join</span>
+        <span class="fn-sig">(select, table1, table2, on, where?, order?, format?)</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">LEFT JOIN entre dos tablas. Incluye filas de <code>table1</code> sin match en <code>table2</code>.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">result=$(db_left_join \
+    "u.id, u.username, COUNT(o.id) AS order_count" \
+    "users u" \
+    "orders o" \
+    "o.user_id = u.id"
+)</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">db_multi_join</span>
+        <span class="fn-sig">(select, from, joins, where?, group_by?, having?, order?, limit?, format?)</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">JOIN múltiple con soporte completo para GROUP BY, HAVING, ORDER BY y LIMIT.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+          <div class="term-body">
+            <pre><code class="language-bash">result=$(db_multi_join \
+    "o.id, u.username, p.name, o.quantity, o.order_date" \
+    "orders o" \
+    "JOIN users u ON u.id = o.user_id JOIN products p ON p.id = o.product_id" \
+    "o.order_date > '2025-01-01'" \
+    "" \
+    "" \
+    "o.order_date DESC" \
+    "50"
+)</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">db_aggregate</span>
+        <span class="fn-sig">(select, from, where?, group_by?, having?, format?)</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Queries de agregación — SUM, COUNT, AVG, MIN, MAX con GROUP BY y HAVING.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+          <div class="term-body">
+            <pre><code class="language-bash"># Total vendido por producto
+result=$(db_aggregate \
+    "product_id, SUM(quantity) AS total_sold" \
+    "orders" \
+    "" \
+    "product_id" \
+    "total_sold > 10"
+)</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Raw query</h3>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">execute_query</span>
+        <span class="fn-sig">(query, format?) → string</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Ejecuta SQL arbitrario contra la base de datos. Retorna el resultado en el formato especificado.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+          <div class="term-body">
+            <pre><code class="language-bash"># Query complejo con subquery
+result=$(execute_query "
+    SELECT u.id, u.username,
+           (SELECT COUNT(*) FROM orders o WHERE o.user_id = u.id) AS order_count
+    FROM users u
+    WHERE u.is_active = 1
+    ORDER BY order_count DESC
+    LIMIT 10;
+" json)
+
+# DDL directo
+execute_query "CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);"</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Utilidades de DB</h3>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">safe_sql_string</span>
+        <span class="fn-sig">(value: string) → string</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Escapa comillas simples y envuelve el valor en comillas SQL. <strong>Siempre usar para valores de texto en queries.</strong></div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">safe_sql_string "O'Brien"   # → 'O''Brien'
+safe_sql_string "Alice"     # → 'Alice'
+
+# En un INSERT:
+db_insert "users" "username" "$(safe_sql_string "$username")"</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-warn">
+      <strong>WARN</strong>Nunca interpolar variables directamente en queries sin <code>safe_sql_string()</code>. Los valores numéricos validados con <code>validate_integer()</code> son la única excepción segura.
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────
+       08 VALIDATION
+  ────────────────────────────────── -->
+  <section id="validation">
+    <h2>Validation</h2>
+
+    <p>Módulo de validación para inputs de usuario. Todas las funciones retornan
+    0 (success) o 1 (failure) para uso directo en condicionales.</p>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">validate_required_fields</span>
+        <span class="fn-sig">(json_body, ...fields) → bool</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Verifica que todos los campos especificados existan y no sean nulos en el JSON recibido.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+          <div class="term-body">
+            <pre><code class="language-bash">if ! validate_required_fields "$body" "username" "email" "password"; then
+    http_response "400 Bad Request" "application/json" \
+        "$(json_error "username, email and password are required")"
+    return
+fi</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">validate_email</span>
+        <span class="fn-sig">(email: string) → bool</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Valida formato de email con regex. No verifica existencia del dominio.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">email=$(get_json_field "$body" "email")
+if [ -n "$email" ] && ! validate_email "$email"; then
+    http_response "400 Bad Request" "application/json" \
+        "$(json_error "invalid email format")"
+    return
+fi</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">validate_integer</span>
+        <span class="fn-sig">(value: string) → bool</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Verifica que el valor sea un entero positivo (<code>[0-9]+</code>). Útil para IDs antes de usarlos en queries.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">validate_integer "42"    # → 0 (true)
+validate_integer "abc"   # → 1 (false)
+validate_integer "3.14"  # → 1 (false)</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">validate_path_param</span>
+        <span class="fn-sig">(param: string) → bool</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Valida que un path param sea entero. Si falla, escribe automáticamente un <code>400</code> y retorna 1. Patrón estándar en todos los handlers con <code>{id}</code>.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">get_user() {
+    local id="$1"
+    validate_path_param "$id" || return   # auto-responde 400 si no es entero
+    # ... seguro usar $id en query
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">validate_json</span>
+        <span class="fn-sig">(json: string) → bool</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Verifica que el string sea JSON válido usando <code>jq empty</code>.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">if ! validate_json "$body"; then
+    http_response "400 Bad Request" "application/json" \
+        "$(json_error "Invalid JSON")"
+    return
+fi</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">sanitize_input</span>
+        <span class="fn-sig">(input: string) → string</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Elimina caracteres de control no imprimibles (<code>\x00-\x1F</code> y <code>\x7F</code>) del input.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">clean_name=$(sanitize_input "$raw_name")</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────
+       09 MIDDLEWARE
+  ────────────────────────────────── -->
+  <section id="middleware">
+    <h2>Middleware</h2>
+
+    <p>El middleware pipeline se ejecuta <em>antes</em> de que la request llegue al route handler.
+    Si un middleware retorna 1 (failure), el pipeline se detiene y no se llama al handler.</p>
+
+    <div class="pipeline">
+      <span class="pipe-step">Request</span>
+      <span class="pipe-arrow">→</span>
+      <span class="pipe-step">logging_middleware</span>
+      <span class="pipe-arrow">→</span>
+      <span class="pipe-step">cors_middleware</span>
+      <span class="pipe-arrow">→</span>
+      <span class="pipe-step">auth_middleware (opt)</span>
+      <span class="pipe-arrow">→</span>
+      <span class="pipe-step route">handler()</span>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">add_middleware</span>
+        <span class="fn-sig">(function_name: string)</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Agrega una función al pipeline. El orden de llamada refleja el orden de registro.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">api.sh</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+          <div class="term-body">
+            <pre><code class="language-bash">add_middleware "logging_middleware"
+add_middleware "cors_middleware"
+add_middleware "auth_middleware"    # opcional
+add_middleware "rate_limit_middleware"  # custom</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Middlewares built-in</h3>
+
+    <h4>logging_middleware</h4>
+    <p>Escribe cada request a <code>$LOG_FILE</code> con timestamp, método y path.</p>
+    <div class="term">
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">access.log</span></div>
+      <div class="term-body">
+        <pre><code class="language-bash">[2025-09-15 22:05:01] GET /users
+[2025-09-15 22:05:03] POST /users
+[2025-09-15 22:05:07] GET /users/1
+[2025-09-15 22:05:12] DELETE /users/1</code></pre>
+      </div>
+    </div>
+
+    <h4>cors_middleware</h4>
+    <p>Intercepta requests <code>OPTIONS</code> (preflight) y responde <code>204 No Content</code>
+    con los headers CORS. Para el resto de métodos, retorna 0 y deja pasar.</p>
+
+    <h4>auth_middleware</h4>
+    <p>Ejemplo incluido: protege rutas bajo <code>/protected/*</code>. Verifica que el header
+    <code>Authorization</code> esté presente; si no, responde <code>401</code>.</p>
+
+    <div class="term">
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">middleware.sh — auth_middleware</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+      <div class="term-body">
+        <pre><code class="language-bash">auth_middleware() {
+    local method="$1"
+    local path="$2"
+    local auth_header
+    auth_header=$(get_header "Authorization")
+
+    if [[ "$path" == "/protected"* ]] && [ -z "$auth_header" ]; then
+        http_response "401 Unauthorized" "application/json" \
+            "$(json_error "Authentication required")"
+        return 1
+    fi
+    return 0
+}</code></pre>
+      </div>
+    </div>
+
+    <h3>Middleware custom</h3>
+
+    <p>Un middleware es cualquier función Bash que recibe <code>(method, path, body)</code>
+    y retorna 0 para continuar o 1 para cortar el pipeline.</p>
+
+    <div class="term">
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo — rate limiter simple</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+      <div class="term-body">
+        <pre><code class="language-bash">rate_limit_middleware() {
+    local method="$1"
+    local path="$2"
+    local ip="${REMOTE_ADDR:-unknown}"
+    local window=60
+    local max_requests=100
+
+    local count_file="/tmp/rl_${ip}"
+    local now count
+    now=$(date +%s)
+    count=$(cat "$count_file" 2>/dev/null || echo "0 0")
+
+    local last_reset count_val
+    last_reset=$(echo "$count" | awk '{print $1}')
+    count_val=$(echo "$count" | awk '{print $2}')
+
+    if (( now - last_reset >= window )); then
+        count_val=0
+        last_reset=$now
+    fi
+
+    count_val=$(( count_val + 1 ))
+    echo "$last_reset $count_val" > "$count_file"
+
+    if (( count_val > max_requests )); then
+        http_response "429 Too Many Requests" "application/json" \
+            "$(json_error "Rate limit exceeded")"
+        return 1
+    fi
+    return 0
+}
+
+# Registrar en api.sh:
+add_middleware "rate_limit_middleware"</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────
+       10 MIGRATIONS
+  ────────────────────────────────── -->
+  <section id="migrations">
+    <h2>Migrations</h2>
+
+    <p>El sistema de migraciones trackea qué scripts ya se ejecutaron en la tabla
+    <code>migrations</code> de SQLite. Cada migración tiene funciones <code>up()</code>
+    y <code>down()</code>.</p>
+
+    <h3>Comandos de migrate.sh</h3>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">bash</span>
+        <button class="term-copy" onclick="copyCode(this)">copy</button>
+      </div>
+      <div class="term-body">
+        <pre><code class="language-bash"># Ejecutar todas las migraciones pendientes
+./migrate.sh
+
+# Ver estado de todas las migraciones
+./migrate.sh status
+
+# Rollback de la última migración
+./migrate.sh rollback
+
+# Rollback de una migración específica
+./migrate.sh rollback 20250915_220501_users.sh
+
+# Drop total + re-ejecutar todas (DESTRUCTIVO)
+./migrate.sh fresh
+
+# Rollback de TODAS las migraciones
+./migrate.sh reset</code></pre>
+      </div>
+    </div>
+
+    <div class="term">
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">./migrate.sh status</span></div>
+      <div class="term-body">
+        <span class="out">Migration Status:</span>
+        <span class="out">==================</span>
+        <span class="out">✓ 20250915_220501_users.sh (executed)</span>
+        <span class="out">✓ 20250915_223331_products.sh (executed)</span>
+        <span class="out">✓ 20250915_223649_orders.sh (executed)</span>
+        <span class="out">✗ 20260427_151148_users.sh (pending)</span>
+      </div>
+    </div>
+
+    <h3>Crear una migración</h3>
+
+    <div class="term">
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">bash</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+      <div class="term-body">
+        <pre><code class="language-bash"># Crear tabla (template completo)
+./make_migration.sh create_posts_table posts
+
+# Agregar columna (template de add_column)
+./make_migration.sh add_bio_to_users users
+
+# Migración genérica
+./make_migration.sh add_user_index</code></pre>
+      </div>
+    </div>
+
+    <p>El script genera un archivo con timestamp en <code>migrations/</code> listo para editar:</p>
+
+    <div class="term">
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">migrations/20260427_151148_create_posts_table.sh</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+      <div class="term-body">
+        <pre><code class="language-bash">#!/bin/bash
+
+source "$(dirname "$0")/../shellrest/migration.sh"
+
+up() {
+    local columns="$(id_column),
+    $(string_column "title" 255 false),
+    $(string_column "body"),
+    $(integer_column "user_id" false),
+    $(boolean_column "published" "0"),
+    $(timestamps_columns)"
+
+    local constraints="$(foreign_key "user_id" "users")"
+
+    create_table "posts" "$columns" "$constraints"
+
+    create_index "idx_posts_user_id" "posts" "user_id"
+    create_index "idx_posts_published" "posts" "published"
+}
+
+down() {
+    drop_index "idx_posts_user_id"
+    drop_index "idx_posts_published"
+    drop_table "posts"
+}
+
+if [ "$1" = "up" ]; then
+    up
+elif [ "$1" = "down" ]; then
+    down
+else
+    echo "Usage: $0 {up|down}"
+    exit 1
+fi</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────
+       11 SCHEMA BUILDER
+  ────────────────────────────────── -->
+  <section id="schema">
+    <h2>Schema Builder</h2>
+
+    <p>Helpers que generan fragmentos de DDL SQL. Se usan dentro de las funciones
+    <code>up()</code> de las migraciones.</p>
+
+    <h3>Column types</h3>
+
+    <table class="env-table">
+      <thead>
+        <tr><th>Función</th><th>SQL generado</th><th>Firma</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="env-key">id_column()</td>
+          <td><code>id INTEGER PRIMARY KEY AUTOINCREMENT</code></td>
+          <td class="env-desc">sin parámetros</td>
+        </tr>
+        <tr>
+          <td class="env-key">string_column()</td>
+          <td><code>name TEXT [NOT NULL]</code></td>
+          <td class="env-desc">(name, length=255, nullable=true)</td>
+        </tr>
+        <tr>
+          <td class="env-key">integer_column()</td>
+          <td><code>name INTEGER [NOT NULL]</code></td>
+          <td class="env-desc">(name, nullable=true)</td>
+        </tr>
+        <tr>
+          <td class="env-key">decimal_column()</td>
+          <td><code>name DECIMAL(10,2) [NOT NULL]</code></td>
+          <td class="env-desc">(name, precision_scale="10,2", nullable=true)</td>
+        </tr>
+        <tr>
+          <td class="env-key">boolean_column()</td>
+          <td><code>name BOOLEAN [NOT NULL] [DEFAULT val]</code></td>
+          <td class="env-desc">(name, default="", nullable=true)</td>
+        </tr>
+        <tr>
+          <td class="env-key">datetime_column()</td>
+          <td><code>name DATETIME [NOT NULL] [DEFAULT ...]</code></td>
+          <td class="env-desc">(name, default="", nullable=true) — usa "now" para CURRENT_TIMESTAMP</td>
+        </tr>
+        <tr>
+          <td class="env-key">timestamps_columns()</td>
+          <td><code>created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at...</code></td>
+          <td class="env-desc">sin parámetros — agrega ambas</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Constraints e Indexes</h3>
+
+    <table class="env-table">
+      <thead>
+        <tr><th>Función</th><th>SQL generado</th><th>Firma</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="env-key">foreign_key()</td>
+          <td><code>FOREIGN KEY (col) REFERENCES table(id)</code></td>
+          <td class="env-desc">(column, ref_table, ref_column="id")</td>
+        </tr>
+        <tr>
+          <td class="env-key">unique_constraint()</td>
+          <td><code>UNIQUE (columns)</code></td>
+          <td class="env-desc">(columns)</td>
+        </tr>
+        <tr>
+          <td class="env-key">create_index()</td>
+          <td><code>CREATE [UNIQUE] INDEX IF NOT EXISTS ...</code></td>
+          <td class="env-desc">(name, table, columns, unique=false)</td>
+        </tr>
+        <tr>
+          <td class="env-key">drop_index()</td>
+          <td><code>DROP INDEX IF EXISTS name</code></td>
+          <td class="env-desc">(name)</td>
+        </tr>
+        <tr>
+          <td class="env-key">create_table()</td>
+          <td><code>CREATE TABLE IF NOT EXISTS ...</code></td>
+          <td class="env-desc">(name, columns, constraints="")</td>
+        </tr>
+        <tr>
+          <td class="env-key">drop_table()</td>
+          <td><code>DROP TABLE IF EXISTS name</code></td>
+          <td class="env-desc">(name)</td>
+        </tr>
+        <tr>
+          <td class="env-key">add_column()</td>
+          <td><code>ALTER TABLE t ADD COLUMN ...</code></td>
+          <td class="env-desc">(table, column_definition)</td>
+        </tr>
+        <tr>
+          <td class="env-key">rename_table()</td>
+          <td><code>ALTER TABLE old RENAME TO new</code></td>
+          <td class="env-desc">(old_name, new_name)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="term">
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">schema builder — ejemplo completo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+      <div class="term-body">
+        <pre><code class="language-bash">up() {
+    local columns="$(id_column),
+    $(string_column "title" 255 false),
+    $(string_column "slug" 255 false),
+    $(string_column "body"),
+    $(integer_column "user_id" false),
+    $(decimal_column "price" "8,2"),
+    $(boolean_column "is_published" "0" false),
+    $(datetime_column "published_at"),
+    $(timestamps_columns)"
+
+    local constraints="$(unique_constraint "slug"),
+    $(foreign_key "user_id" "users")"
+
+    create_table "posts" "$columns" "$constraints"
+
+    create_index "idx_posts_slug"      "posts" "slug"        "true"
+    create_index "idx_posts_user_id"   "posts" "user_id"
+    create_index "idx_posts_published" "posts" "is_published"
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────
+       12 JSON UTILITIES
+  ────────────────────────────────── -->
+  <section id="utils">
+    <h2>JSON Utilities</h2>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">get_json_field</span>
+        <span class="fn-sig">(body, field) → string</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Extrae un campo del JSON del body. Retorna vacío si el campo no existe o es <code>null</code>.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash"># body = '{"username":"alice","age":30}'
+username=$(get_json_field "$body" "username")  # "alice"
+age=$(get_json_field "$body" "age")            # "30"
+missing=$(get_json_field "$body" "email")      # "" (vacío)</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">get_required_field</span>
+        <span class="fn-sig">(body, field) → string | exit 1</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc">Como <code>get_json_field</code> pero retorna 1 si el campo está vacío. Útil en combinación con <code>||</code>.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash">username=$(get_required_field "$body" "username") || {
+    http_response "400 Bad Request" "application/json" \
+        "$(json_error "username is required")"
+    return
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────
+       13 FULL EXAMPLE
+  ────────────────────────────────── -->
+  <section id="example">
+    <h2>Full Example</h2>
+
+    <p>CRUD completo de posts con validaciones, JOIN y migración.</p>
+
+    <h3>Migración</h3>
+    <div class="term">
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">migrations/20260427_create_posts_table.sh</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+      <div class="term-body">
+        <pre><code class="language-bash">#!/bin/bash
+source "$(dirname "$0")/../shellrest/migration.sh"
+
+up() {
+    local columns="$(id_column),
+    $(string_column "title" 255 false),
+    $(string_column "body"),
+    $(integer_column "user_id" false),
+    $(boolean_column "published" "0" false),
+    $(timestamps_columns)"
+
+    create_table "posts" "$columns" "$(foreign_key "user_id" "users")"
+    create_index "idx_posts_user" "posts" "user_id"
+}
+
+down() { drop_table "posts"; }
+
+[ "$1" = "up" ] && up || down</code></pre>
+      </div>
+    </div>
+
+    <h3>Route handler</h3>
+    <div class="term">
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">routes/posts.sh</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+      <div class="term-body">
+        <pre><code class="language-bash">#!/bin/bash
+
+register_route "GET"    "/posts"      "get_posts"
+register_route "POST"   "/posts"      "post_posts"
+register_route "GET"    "/posts/{id}" "get_post"
+register_route "PUT"    "/posts/{id}" "put_post"
+register_route "DELETE" "/posts/{id}" "delete_post"
+
+get_posts() {
+    local result
+    result=$(db_inner_join \
+        "p.id, p.title, u.username AS author, p.published, p.created_at" \
+        "posts p" "users u" "u.id = p.user_id" \
+        "" "p.created_at DESC")
+    [ -z "$result" ] && result="[]"
+    http_response "200 OK" "application/json" "$result"
+}
+
+get_post() {
+    local id="$1"
+    validate_path_param "$id" || return
+
+    local result
+    result=$(db_inner_join \
+        "p.id, p.title, p.body, u.username AS author, p.published, p.created_at" \
+        "posts p" "users u" "u.id = p.user_id" "p.id = $id")
+
+    if [ -z "$result" ] || [ "$result" = "[]" ]; then
+        http_response "404 Not Found" "application/json" "$(json_error "Post not found")"
+    else
+        http_response "200 OK" "application/json" "$result"
+    fi
+}
+
+post_posts() {
+    local body="$1"
+
+    if ! validate_required_fields "$body" "title" "user_id"; then
+        http_response "400 Bad Request" "application/json" \
+            "$(json_error "title and user_id are required")"
+        return
+    fi
+
+    local title body_text user_id published
+    title=$(get_json_field "$body" "title")
+    body_text=$(get_json_field "$body" "body")
+    user_id=$(get_json_field "$body" "user_id")
+    published=$(get_json_field "$body" "published")
+    published="${published:-0}"
+
+    if ! validate_integer "$user_id"; then
+        http_response "400 Bad Request" "application/json" \
+            "$(json_error "user_id must be an integer")"
+        return
+    fi
+
+    if ! db_exists "users" "id = $user_id"; then
+        http_response "404 Not Found" "application/json" \
+            "$(json_error "User not found")"
+        return
+    fi
+
+    db_insert "posts" "title, body, user_id, published" \
+        "$(safe_sql_string "$title"), $(safe_sql_string "$body_text"), $user_id, $published"
+
+    local id
+    id=$(db_get_last_insert_id)
+    http_response "201 Created" "application/json" \
+        "$(db_select "posts" "id, title, body, user_id, published, created_at" "id = $id")"
+}
+
+put_post() {
+    local id="$1" body="$2"
+    validate_path_param "$id" || return
+
+    if ! validate_required_fields "$body" "title"; then
+        http_response "400 Bad Request" "application/json" \
+            "$(json_error "title is required")"
+        return
+    fi
+
+    local title body_text published
+    title=$(get_json_field "$body" "title")
+    body_text=$(get_json_field "$body" "body")
+    published=$(get_json_field "$body" "published")
+
+    db_update "posts" \
+        "title = $(safe_sql_string "$title"), body = $(safe_sql_string "$body_text"), published = ${published:-0}" \
+        "id = $id"
+
+    local changes
+    changes=$(db_get_changes)
+    if [ "${changes:-0}" -gt 0 ]; then
+        http_response "200 OK" "application/json" \
+            "$(db_select "posts" "id, title, body, user_id, published, created_at" "id = $id")"
+    else
+        http_response "404 Not Found" "application/json" "$(json_error "Post not found")"
+    fi
+}
+
+delete_post() {
+    local id="$1"
+    validate_path_param "$id" || return
+    db_delete "posts" "id = $id"
+    local changes
+    changes=$(db_get_changes)
+    if [ "${changes:-0}" -gt 0 ]; then
+        http_response "204 No Content" "application/json" ""
+    else
+        http_response "404 Not Found" "application/json" "$(json_error "Post not found")"
+    fi
+}</code></pre>
+      </div>
+    </div>
+
+    <h3>Test con curl</h3>
+    <div class="term">
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">bash</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+      <div class="term-body">
+        <pre><code class="language-bash"># Listar posts con JOIN de autor
+curl http://localhost:8082/posts
+
+# Crear post
+curl -X POST http://localhost:8082/posts \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Hello World","body":"Mi primer post","user_id":1}'
+
+# Actualizar
+curl -X PUT http://localhost:8082/posts/1 \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Updated","published":1}'
+
+# Eliminar
+curl -X DELETE http://localhost:8082/posts/1</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────
+       14 API REFERENCE
+  ────────────────────────────────── -->
+  <section id="apiref">
+    <h2>API Reference</h2>
+
+    <p>Endpoints disponibles en la instalación por defecto.</p>
+
+    <table class="api-table">
+      <thead>
+        <tr>
+          <th>Método</th>
+          <th>Path</th>
+          <th>Body</th>
+          <th>Respuesta</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="api-method api-get">GET</span></td>
+          <td class="api-path">/</td>
+          <td class="api-code">—</td>
+          <td class="api-code">200 text/plain</td>
+          <td class="api-desc">Health check raíz</td>
+        </tr>
+        <tr>
+          <td><span class="api-method api-get">GET</span></td>
+          <td class="api-path">/users</td>
+          <td class="api-code">—</td>
+          <td class="api-code">200 JSON[]</td>
+          <td class="api-desc">Lista todos los usuarios</td>
+        </tr>
+        <tr>
+          <td><span class="api-method api-post">POST</span></td>
+          <td class="api-path">/users</td>
+          <td class="api-code">{ username, email? }</td>
+          <td class="api-code">201 JSON</td>
+          <td class="api-desc">Crea un usuario</td>
+        </tr>
+        <tr>
+          <td><span class="api-method api-get">GET</span></td>
+          <td class="api-path">/users/{id}</td>
+          <td class="api-code">—</td>
+          <td class="api-code">200 / 404</td>
+          <td class="api-desc">Obtiene un usuario por ID</td>
+        </tr>
+        <tr>
+          <td><span class="api-method api-put">PUT</span></td>
+          <td class="api-path">/users/{id}</td>
+          <td class="api-code">{ username, email? }</td>
+          <td class="api-code">200 / 404</td>
+          <td class="api-desc">Actualiza un usuario</td>
+        </tr>
+        <tr>
+          <td><span class="api-method api-delete">DELETE</span></td>
+          <td class="api-path">/users/{id}</td>
+          <td class="api-code">—</td>
+          <td class="api-code">204 / 404</td>
+          <td class="api-desc">Elimina un usuario</td>
+        </tr>
+        <tr>
+          <td><span class="api-method api-get">GET</span></td>
+          <td class="api-path">/products</td>
+          <td class="api-code">—</td>
+          <td class="api-code">200 JSON[]</td>
+          <td class="api-desc">Lista todos los productos</td>
+        </tr>
+        <tr>
+          <td><span class="api-method api-post">POST</span></td>
+          <td class="api-path">/products</td>
+          <td class="api-code">{ name, price, description?, stock_quantity? }</td>
+          <td class="api-code">201 JSON</td>
+          <td class="api-desc">Crea un producto</td>
+        </tr>
+        <tr>
+          <td><span class="api-method api-get">GET</span></td>
+          <td class="api-path">/products/{id}</td>
+          <td class="api-code">—</td>
+          <td class="api-code">200 / 404</td>
+          <td class="api-desc">Obtiene un producto por ID</td>
+        </tr>
+        <tr>
+          <td><span class="api-method api-put">PUT</span></td>
+          <td class="api-path">/products/{id}</td>
+          <td class="api-code">{ name, price, description?, stock_quantity? }</td>
+          <td class="api-code">200 / 404</td>
+          <td class="api-desc">Actualiza un producto</td>
+        </tr>
+        <tr>
+          <td><span class="api-method api-delete">DELETE</span></td>
+          <td class="api-path">/products/{id}</td>
+          <td class="api-code">—</td>
+          <td class="api-code">204 / 404</td>
+          <td class="api-desc">Elimina un producto</td>
+        </tr>
+        <tr>
+          <td><span class="api-method api-get">GET</span></td>
+          <td class="api-path">/orders</td>
+          <td class="api-code">—</td>
+          <td class="api-code">200 JSON[]</td>
+          <td class="api-desc">Lista todas las órdenes (con JOIN users + products)</td>
+        </tr>
+        <tr>
+          <td><span class="api-method api-get">GET</span></td>
+          <td class="api-path">/orders/{id}</td>
+          <td class="api-code">—</td>
+          <td class="api-code">200 / 404</td>
+          <td class="api-desc">Obtiene una orden por ID</td>
+        </tr>
+        <tr>
+          <td><span class="api-method api-post">POST</span></td>
+          <td class="api-path">/orders</td>
+          <td class="api-code">{ user_id, product_id, quantity }</td>
+          <td class="api-code">201 JSON</td>
+          <td class="api-desc">Crea una orden</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </section>
+
+  <!-- ─────────────────────────────────
+       15 ROADMAP
+  ────────────────────────────────── -->
+  <section id="roadmap">
+    <h2>Roadmap</h2>
+
+    <p>Mejoras planificadas ordenadas por impacto en rendimiento y escalabilidad.</p>
+
+    <div id="roadmap-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;"></div>
+    <div id="roadmap-list"></div>
+
+    <div style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text-dim); font-size: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <span>
+        <span style="color: var(--green)">ShellRest</span> v1.0.0 —
+        Bash 5+ · SQLite 3+ · MIT License ·
+        <span style="color: var(--text-dim)">Built with 100% pure shell</span>
+      </span>
+      <a href="https://github.com/4drian0rtiz" target="_blank" rel="noopener"
+         style="display: inline-flex; align-items: center; gap: 7px; color: var(--text-dim); text-decoration: none; border: 1px solid var(--border); padding: 5px 12px; border-radius: 4px; font-size: 12px; transition: all 0.15s;"
+         onmouseover="this.style.color='var(--green)';this.style.borderColor='var(--green)'"
+         onmouseout="this.style.color='var(--text-dim)';this.style.borderColor='var(--border)'">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+                   0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+                   -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+                   .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15
+                   -.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27
+                   .68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
+                   .51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+                   0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        4drian0rtiz
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<script src="main.js" defer></script>
+</body>
+</html>
