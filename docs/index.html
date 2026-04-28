@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,6 +40,11 @@
  ___) | | | |  __/ | |  _ &lt; __/\__ \ |_
 |____/|_| |_|\___|_|_|_| \_\___||___/\__|</pre>
     <div class="sidebar-version">v1.0.0 · pure bash</div>
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
+      <span class="lang-sep">·</span>
+      <button class="lang-btn" data-lang="es" onclick="setLang('es')">ES</button>
+    </div>
   </div>
 
   <div class="nav-group">
@@ -88,11 +93,11 @@
  ___) | | | |  __/ | |  _ &lt; __/\__ \ |_
 |____/|_| |_|\___|_|_|_| \_\___||___/\__|</pre>
 
-    <div class="hero-tagline">Pure Bash REST API Framework</div>
-    <div class="hero-desc">
-      ShellRest es un framework HTTP escrito completamente en Bash 5+.
-      Sin dependencias de runtime — solo <code>bash</code>, <code>sqlite3</code>, <code>jq</code> y <code>nc</code>.
-      Router con path params, ORM-like helpers, sistema de migraciones, middleware pipeline.
+    <div class="hero-tagline" data-i18n="hero.tagline">Pure Bash REST API Framework</div>
+    <div class="hero-desc" data-i18n-html="hero.desc">
+      ShellRest is an HTTP framework written entirely in Bash 5+.
+      No runtime dependencies — just <code>bash</code>, <code>sqlite3</code>, <code>jq</code> and <code>nc</code>.
+      Router with path params, ORM-like helpers, migration system, middleware pipeline.
     </div>
 
     <div class="badge-row">
@@ -109,11 +114,9 @@
   <section id="overview">
     <h2>Overview</h2>
 
-    <p>ShellRest convierte un script Bash en un servidor HTTP funcional. Cada request dispara
-    un proceso hijo que sourcéa el framework, matchea la ruta, ejecuta el handler y devuelve
-    una respuesta HTTP/1.1 completa.</p>
+    <p data-i18n-html="overview.p1">ShellRest turns a Bash script into a functional HTTP server. Each request spawns a child process that sources the framework, matches the route, executes the handler and returns a complete HTTP/1.1 response.</p>
 
-    <p><strong style="color:var(--text-bright)">Stack mínimo requerido:</strong></p>
+    <p data-i18n-html="overview.stack-title"><strong style="color:var(--text-bright)">Minimum required stack:</strong></p>
 
     <div class="term">
       <div class="term-bar">
@@ -132,10 +135,10 @@
       </div>
     </div>
 
-    <p><strong style="color:var(--text-bright)">Flujo de una request:</strong></p>
+    <p data-i18n-html="overview.flow-title"><strong style="color:var(--text-bright)">Request flow:</strong></p>
 
     <div class="pipeline">
-      <span class="pipe-step">nc (acepta TCP)</span>
+      <span class="pipe-step" data-i18n="pipeline.nc">nc (accepts TCP)</span>
       <span class="pipe-arrow">→</span>
       <span class="pipe-step">api.sh (fork)</span>
       <span class="pipe-arrow">→</span>
@@ -149,7 +152,7 @@
     </div>
 
     <div class="callout callout-info">
-      <strong>INFO</strong>Cada request es un proceso Bash independiente. No hay estado compartido entre requests — todo estado persiste en SQLite.
+      <strong>INFO</strong><span data-i18n="overview.callout">Each request is an independent Bash process. No shared state between requests — all state persists in SQLite.</span>
     </div>
   </section>
 
@@ -159,7 +162,7 @@
   <section id="quickstart">
     <h2>Quick Start</h2>
 
-    <h3>Clonar e inicializar</h3>
+    <h3 data-i18n="qs.h3-clone">Clone and initialize</h3>
 
     <div class="term">
       <div class="term-bar">
@@ -179,7 +182,7 @@ cd shellrest
       </div>
     </div>
 
-    <h3>Primera request</h3>
+    <h3 data-i18n="qs.h3-first">First request</h3>
 
     <div class="term">
       <div class="term-bar">
@@ -204,7 +207,7 @@ curl -X DELETE http://localhost:8082/users/1</code></pre>
       </div>
     </div>
 
-    <h3>Crear una ruta nueva en 60 segundos</h3>
+    <h3 data-i18n="qs.h3-route">Create a new route in 60 seconds</h3>
 
     <div class="term">
       <div class="term-bar">
@@ -225,7 +228,7 @@ get_health() {
     </div>
 
     <div class="callout callout-success">
-      <strong>TIP</strong>ShellRest carga automáticamente todos los <code>*.sh</code> dentro de <code>routes/</code>. No necesitas registrar el archivo.
+      <strong>TIP</strong><span data-i18n-html="qs.callout">ShellRest automatically loads all <code>*.sh</code> files inside <code>routes/</code>. No need to register the file.</span>
     </div>
   </section>
 
@@ -237,26 +240,26 @@ get_health() {
 
     <div class="tree">
 <span class="tree-dir">shellrest/</span>
-<span class="tree-file">├── <span class="tree-key">server.sh</span>         <span class="tree-desc"># Servidor TCP — arranca nc en loop</span></span>
-<span class="tree-file">├── <span class="tree-key">api.sh</span>            <span class="tree-desc"># Entry point por request — parsea HTTP, ejecuta pipeline</span></span>
-<span class="tree-file">├── <span class="tree-key">migrate.sh</span>        <span class="tree-desc"># Runner de migraciones</span></span>
-<span class="tree-file">├── <span class="tree-key">make_migration.sh</span> <span class="tree-desc"># Generador de archivos de migración</span></span>
-<span class="tree-file">├── .env               <span class="tree-desc"># Variables de entorno (opcional)</span></span>
-<span class="tree-dir">├── shellrest/         <span class="tree-desc"># Core del framework</span></span>
-<span class="tree-file">│   ├── <span class="tree-key">config.sh</span>     <span class="tree-desc"># load_config, get_config, debug_log</span></span>
-<span class="tree-file">│   ├── <span class="tree-key">http.sh</span>       <span class="tree-desc"># http_response, parse_query_string, get_header</span></span>
-<span class="tree-file">│   ├── <span class="tree-key">router.sh</span>     <span class="tree-desc"># register_route, route_request, match_route_pattern</span></span>
-<span class="tree-file">│   ├── <span class="tree-key">database.sh</span>   <span class="tree-desc"># execute_query, escape_sql</span></span>
-<span class="tree-file">│   ├── <span class="tree-key">middleware.sh</span> <span class="tree-desc"># add_middleware, run_middleware, middlewares built-in</span></span>
-<span class="tree-file">│   ├── <span class="tree-key">migration.sh</span>  <span class="tree-desc"># Schema builder + migration tracking</span></span>
-<span class="tree-file">│   ├── <span class="tree-key">utils.sh</span>      <span class="tree-desc"># db_select/insert/update/delete/join, json_error</span></span>
-<span class="tree-file">│   └── <span class="tree-key">validation.sh</span><span class="tree-desc"># validate_json, validate_email, validate_integer…</span></span>
-<span class="tree-dir">├── routes/            <span class="tree-desc"># Handlers de rutas (carga automática)</span></span>
+<span class="tree-file">├── <span class="tree-key">server.sh</span>         <span class="tree-desc" data-i18n="tree.server"># TCP server — starts nc in a loop</span></span>
+<span class="tree-file">├── <span class="tree-key">api.sh</span>            <span class="tree-desc" data-i18n="tree.api"># Entry point per request — parses HTTP, runs pipeline</span></span>
+<span class="tree-file">├── <span class="tree-key">migrate.sh</span>        <span class="tree-desc" data-i18n="tree.migrate"># Migration runner</span></span>
+<span class="tree-file">├── <span class="tree-key">make_migration.sh</span> <span class="tree-desc" data-i18n="tree.make-migration"># Migration file generator</span></span>
+<span class="tree-file">├── .env               <span class="tree-desc" data-i18n="tree.env"># Environment variables (optional)</span></span>
+<span class="tree-dir">├── shellrest/         <span class="tree-desc" data-i18n="tree.shellrest"># Framework core</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">config.sh</span>     <span class="tree-desc" data-i18n="tree.config"># load_config, get_config, debug_log</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">http.sh</span>       <span class="tree-desc" data-i18n="tree.http"># http_response, parse_query_string, get_header</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">router.sh</span>     <span class="tree-desc" data-i18n="tree.router"># register_route, route_request, match_route_pattern</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">database.sh</span>   <span class="tree-desc" data-i18n="tree.database"># execute_query, escape_sql</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">middleware.sh</span> <span class="tree-desc" data-i18n="tree.middleware"># add_middleware, run_middleware, built-in middlewares</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">migration.sh</span>  <span class="tree-desc" data-i18n="tree.migration"># Schema builder + migration tracking</span></span>
+<span class="tree-file">│   └── <span class="tree-key">utils.sh</span>      <span class="tree-desc" data-i18n="tree.utils"># db_select/insert/update/delete/join, json_error</span></span>
+<span class="tree-file">│   └── <span class="tree-key">validation.sh</span><span class="tree-desc" data-i18n="tree.validation"># validate_json, validate_email, validate_integer…</span></span>
+<span class="tree-dir">├── routes/            <span class="tree-desc" data-i18n="tree.routes"># Route handlers (auto-loaded)</span></span>
 <span class="tree-file">│   ├── root.sh</span>
 <span class="tree-file">│   ├── users.sh</span>
 <span class="tree-file">│   ├── products.sh</span>
 <span class="tree-file">│   └── orders.sh</span>
-<span class="tree-dir">└── migrations/        <span class="tree-desc"># Archivos de migración (ordenados por timestamp)</span></span>
+<span class="tree-dir">└── migrations/        <span class="tree-desc" data-i18n="tree.migrations-dir"># Migration files (ordered by timestamp)</span></span>
 <span class="tree-file">    ├── 20250915_220501_users.sh</span>
 <span class="tree-file">    ├── 20250915_223331_products.sh</span>
 <span class="tree-file">    └── 20250915_223649_orders.sh</span>
@@ -269,8 +272,7 @@ get_health() {
   <section id="config">
     <h2>Configuration</h2>
 
-    <p>ShellRest lee configuración desde <code>.env</code> en la raíz del proyecto.
-    Todas las variables son opcionales — si no existen, se usan los defaults.</p>
+    <p data-i18n-html="config.p1">ShellRest reads configuration from <code>.env</code> in the project root. All variables are optional — if they don't exist, defaults are used.</p>
 
     <div class="term">
       <div class="term-bar">
@@ -290,56 +292,56 @@ DEBUG=false</code></pre>
     <table class="env-table">
       <thead>
         <tr>
-          <th>Variable</th>
-          <th>Default</th>
-          <th>Descripción</th>
+          <th data-i18n="config.th1">Variable</th>
+          <th data-i18n="config.th2">Default</th>
+          <th data-i18n="config.th3">Description</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="env-key">API_PORT</td>
           <td class="env-default">8082</td>
-          <td class="env-desc">Puerto TCP donde escucha el servidor</td>
+          <td class="env-desc" data-i18n="config.api-port-desc">TCP port where the server listens</td>
         </tr>
         <tr>
           <td class="env-key">API_HOST</td>
           <td class="env-default">localhost</td>
-          <td class="env-desc">Host del servidor</td>
+          <td class="env-desc" data-i18n="config.api-host-desc">Server host</td>
         </tr>
         <tr>
           <td class="env-key">DB_FILE</td>
           <td class="env-default">sqlite_data.db</td>
-          <td class="env-desc">Ruta al archivo SQLite. Relativa a la raíz del proyecto</td>
+          <td class="env-desc" data-i18n="config.db-file-desc">Path to the SQLite file. Relative to project root</td>
         </tr>
         <tr>
           <td class="env-key">LOG_FILE</td>
           <td class="env-default">access.log</td>
-          <td class="env-desc">Ruta al log de acceso escrito por <code>logging_middleware</code></td>
+          <td class="env-desc" data-i18n-html="config.log-file-desc">Path to the access log written by <code>logging_middleware</code></td>
         </tr>
         <tr>
           <td class="env-key">DEBUG</td>
           <td class="env-default">false</td>
-          <td class="env-desc">Habilita <code>debug_log()</code> — escribe a stderr</td>
+          <td class="env-desc" data-i18n-html="config.debug-desc">Enables <code>debug_log()</code> — writes to stderr</td>
         </tr>
         <tr>
           <td class="env-key">CORS_ORIGIN</td>
           <td class="env-default">*</td>
-          <td class="env-desc">Valor del header <code>Access-Control-Allow-Origin</code></td>
+          <td class="env-desc" data-i18n-html="config.cors-origin-desc">Value of the <code>Access-Control-Allow-Origin</code> header</td>
         </tr>
         <tr>
           <td class="env-key">CORS_METHODS</td>
           <td class="env-default">GET, POST, PUT, DELETE, OPTIONS</td>
-          <td class="env-desc">Métodos HTTP permitidos por CORS</td>
+          <td class="env-desc" data-i18n="config.cors-methods-desc">HTTP methods allowed by CORS</td>
         </tr>
         <tr>
           <td class="env-key">CORS_HEADERS</td>
           <td class="env-default">Content-Type, Authorization</td>
-          <td class="env-desc">Headers permitidos por CORS</td>
+          <td class="env-desc" data-i18n="config.cors-headers-desc">Headers allowed by CORS</td>
         </tr>
       </tbody>
     </table>
 
-    <h3>API de configuración</h3>
+    <h3 data-i18n="config.h3-api">Configuration API</h3>
 
     <div class="fn-card">
       <div class="fn-header">
@@ -347,7 +349,7 @@ DEBUG=false</code></pre>
         <span class="fn-sig">() → void</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Carga el archivo <code>.env</code> y exporta todas las variables con sus defaults. Se llama automáticamente en <code>api.sh</code> y <code>server.sh</code>.</div>
+        <div class="fn-desc" data-i18n-html="config.load-config-desc">Loads the <code>.env</code> file and exports all variables with their defaults. Called automatically in <code>api.sh</code> and <code>server.sh</code>.</div>
       </div>
     </div>
 
@@ -357,9 +359,9 @@ DEBUG=false</code></pre>
         <span class="fn-sig">(key: string) → string</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Retorna el valor de una clave de configuración por nombre.</div>
+        <div class="fn-desc" data-i18n="config.get-config-desc">Returns the value of a configuration key by name.</div>
         <table class="param-table">
-          <thead><tr><th>Param</th><th>Tipo</th><th>Valores válidos</th></tr></thead>
+          <thead><tr><th>Param</th><th data-i18n="config.param-th2">Type</th><th data-i18n="config.param-th3">Valid values</th></tr></thead>
           <tbody>
             <tr><td class="param-name">key</td><td class="param-type">string</td><td class="param-desc"><code>port</code> · <code>host</code> · <code>db_file</code> · <code>log_file</code> · <code>debug</code></td></tr>
           </tbody>
@@ -380,7 +382,7 @@ DB=$(get_config "db_file")   # "/ruta/a/sqlite_data.db"</code></pre>
         <span class="fn-sig">(...args) → void</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Escribe a stderr solo cuando <code>DEBUG=true</code>. No tiene efecto en producción.</div>
+        <div class="fn-desc" data-i18n-html="config.debug-log-desc">Writes to stderr only when <code>DEBUG=true</code>. No effect in production.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -398,8 +400,7 @@ DB=$(get_config "db_file")   # "/ruta/a/sqlite_data.db"</code></pre>
   <section id="routing">
     <h2>Routing</h2>
 
-    <p>El router usa arrays asociativos de Bash para mapear <code>METHOD PATH</code> → función handler.
-    Soporta rutas exactas y rutas con path parameters (<code>{param}</code>).</p>
+    <p data-i18n-html="routing.p1">The router uses Bash associative arrays to map <code>METHOD PATH</code> → handler function. Supports exact routes and routes with path parameters (<code>{param}</code>).</p>
 
     <h3>register_route</h3>
 
@@ -409,13 +410,13 @@ DB=$(get_config "db_file")   # "/ruta/a/sqlite_data.db"</code></pre>
         <span class="fn-sig">(method, pattern, handler)</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Registra una ruta asociando un método HTTP y un patrón de path con una función Bash.</div>
+        <div class="fn-desc" data-i18n="routing.register-desc">Registers a route associating an HTTP method and path pattern with a Bash function.</div>
         <table class="param-table">
-          <thead><tr><th>Param</th><th>Tipo</th><th>Descripción</th></tr></thead>
+          <thead><tr><th>Param</th><th data-i18n="routing.th-type">Type</th><th data-i18n="routing.th-desc">Description</th></tr></thead>
           <tbody>
             <tr><td class="param-name">method</td><td class="param-type">string</td><td class="param-desc"><code>GET</code> · <code>POST</code> · <code>PUT</code> · <code>PATCH</code> · <code>DELETE</code></td></tr>
-            <tr><td class="param-name">pattern</td><td class="param-type">string</td><td class="param-desc">Path con soporte para <code>{param}</code> y wildcard <code>*</code></td></tr>
-            <tr><td class="param-name">handler</td><td class="param-type">string</td><td class="param-desc">Nombre de la función Bash que maneja la request</td></tr>
+            <tr><td class="param-name">pattern</td><td class="param-type">string</td><td class="param-desc" data-i18n-html="routing.pattern-desc">Path with support for <code>{param}</code> and wildcard <code>*</code></td></tr>
+            <tr><td class="param-name">handler</td><td class="param-type">string</td><td class="param-desc" data-i18n="routing.handler-desc">Name of the Bash function that handles the request</td></tr>
           </tbody>
         </table>
         <div class="term">
@@ -432,10 +433,9 @@ register_route "GET"    "/users/{id}/posts" "get_user_posts"</code></pre>
       </div>
     </div>
 
-    <h3>Path Parameters</h3>
+    <h3 data-i18n="routing.h3-params">Path Parameters</h3>
 
-    <p>Los segmentos entre llaves <code>{nombre}</code> en el patrón se extraen automáticamente
-    y se pasan al handler como argumentos posicionales en el orden en que aparecen en el path.</p>
+    <p data-i18n-html="routing.params-p">Segments in curly braces <code>{name}</code> in the pattern are automatically extracted and passed to the handler as positional arguments in the order they appear in the path.</p>
 
     <div class="term">
       <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">path params</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
@@ -459,13 +459,12 @@ get_user_order() {
     </div>
 
     <div class="callout callout-info">
-      <strong>INFO</strong>El array global <code>PATH_PARAMS</code> también está disponible: <code>${PATH_PARAMS["id"]}</code>. Los args posicionales son más convenientes para la mayoría de los casos.
+      <strong>INFO</strong><span data-i18n-html="routing.callout">The global array <code>PATH_PARAMS</code> is also available: <code>${PATH_PARAMS["id"]}</code>. Positional args are more convenient for most cases.</span>
     </div>
 
-    <h3>Query String</h3>
+    <h3 data-i18n="routing.h3-query">Query String</h3>
 
-    <p>Los query params se parsean con <code>parse_query_string</code> y se exportan como variables
-    con prefijo <code>QUERY_</code>.</p>
+    <p data-i18n-html="routing.query-p">Query params are parsed with <code>parse_query_string</code> and exported as variables with prefix <code>QUERY_</code>.</p>
 
     <div class="term">
       <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">query string</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
@@ -495,7 +494,7 @@ get_users() {
         <span class="fn-sig">(header_name: string) → string</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Busca un header HTTP por nombre (case-insensitive) en la request actual. Retorna vacío si no existe.</div>
+        <div class="fn-desc" data-i18n="routing.get-header-desc">Looks up an HTTP header by name (case-insensitive) in the current request. Returns empty if it doesn't exist.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -517,7 +516,7 @@ content_type=$(get_header "Content-Type")
         <span class="fn-sig">(dir?: string = "routes") → void</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Sourcéa todos los <code>*.sh</code> dentro del directorio especificado. Se llama automáticamente en <code>api.sh</code>. Cada archivo puede registrar las rutas que quiera.</div>
+        <div class="fn-desc" data-i18n-html="routing.load-routes-desc">Sources all <code>*.sh</code> files in the specified directory. Called automatically in <code>api.sh</code>. Each file can register as many routes as it wants.</div>
       </div>
     </div>
   </section>
@@ -534,17 +533,17 @@ content_type=$(get_header "Content-Type")
         <span class="fn-sig">(status, content_type, body)</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Escribe una respuesta HTTP/1.1 completa a stdout, incluyendo headers CORS automáticos y <code>Content-Length</code> calculado.</div>
+        <div class="fn-desc" data-i18n-html="http.response-desc">Writes a complete HTTP/1.1 response to stdout, including automatic CORS headers and calculated <code>Content-Length</code>.</div>
         <table class="param-table">
-          <thead><tr><th>Param</th><th>Tipo</th><th>Ejemplos</th></tr></thead>
+          <thead><tr><th>Param</th><th data-i18n="routing.th-type">Type</th><th data-i18n="http.th-examples">Examples</th></tr></thead>
           <tbody>
             <tr><td class="param-name">status</td><td class="param-type">string</td><td class="param-desc"><code>"200 OK"</code> · <code>"201 Created"</code> · <code>"400 Bad Request"</code> · <code>"404 Not Found"</code> · <code>"500 Internal Server Error"</code></td></tr>
             <tr><td class="param-name">content_type</td><td class="param-type">string</td><td class="param-desc"><code>"application/json"</code> · <code>"text/plain"</code> · <code>"text/html"</code></td></tr>
-            <tr><td class="param-name">body</td><td class="param-type">string</td><td class="param-desc">Cuerpo de la respuesta</td></tr>
+            <tr><td class="param-name">body</td><td class="param-type">string</td><td class="param-desc">—</td></tr>
           </tbody>
         </table>
         <div class="term">
-          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplos</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">examples</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
           <div class="term-body">
             <pre><code class="language-bash"># 200 con JSON
 http_response "200 OK" "application/json" '{"id":1,"name":"Alice"}'
@@ -575,7 +574,7 @@ http_response "500 Internal Server Error" "application/json" \
       </div>
     </div>
 
-    <h3>Helpers de respuesta</h3>
+    <h3 data-i18n="http.h3-helpers">Response helpers</h3>
 
     <div class="fn-card">
       <div class="fn-header">
@@ -583,7 +582,7 @@ http_response "500 Internal Server Error" "application/json" \
         <span class="fn-sig">(message: string) → string</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Retorna un JSON de error estándar: <code>{"error":"message"}</code></div>
+        <div class="fn-desc" data-i18n-html="http.json-error-desc">Returns a standard error JSON: <code>{"error":"message"}</code></div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -600,7 +599,7 @@ http_response "500 Internal Server Error" "application/json" \
         <span class="fn-sig">(message: string) → string</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Retorna un JSON de éxito estándar: <code>{"message":"..."}</code></div>
+        <div class="fn-desc" data-i18n-html="http.json-success-desc">Returns a standard success JSON: <code>{"message":"..."}</code></div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -611,10 +610,9 @@ http_response "500 Internal Server Error" "application/json" \
       </div>
     </div>
 
-    <h3>Headers CORS</h3>
+    <h3 data-i18n="http.h3-cors">CORS Headers</h3>
 
-    <p>Todos los headers CORS se inyectan automáticamente en cada llamada a <code>http_response</code>.
-    Se controlan desde <code>.env</code>:</p>
+    <p data-i18n-html="http.cors-p">All CORS headers are automatically injected on every <code>http_response</code> call. Controlled from <code>.env</code>:</p>
 
     <div class="term">
       <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">.env</span></div>
@@ -632,10 +630,9 @@ CORS_HEADERS=Content-Type, Authorization, X-Api-Key</code></pre>
   <section id="database">
     <h2>Database</h2>
 
-    <p>ShellRest usa SQLite vía CLI (<code>sqlite3</code>). El módulo <code>utils.sh</code> provee
-    helpers de alto nivel sobre <code>execute_query</code>. Todo retorna JSON por defecto.</p>
+    <p data-i18n-html="db.p1">ShellRest uses SQLite via CLI (<code>sqlite3</code>). The <code>utils.sh</code> module provides high-level helpers over <code>execute_query</code>. Everything returns JSON by default.</p>
 
-    <h3>Queries básicos</h3>
+    <h3 data-i18n="db.h3-basic">Basic queries</h3>
 
     <div class="fn-card">
       <div class="fn-header">
@@ -643,14 +640,14 @@ CORS_HEADERS=Content-Type, Authorization, X-Api-Key</code></pre>
         <span class="fn-sig">(table, fields?, where?, format?)</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Ejecuta un SELECT y retorna el resultado. Formato JSON por defecto.</div>
+        <div class="fn-desc" data-i18n="db.select-desc">Executes a SELECT and returns the result. JSON format by default.</div>
         <table class="param-table">
-          <thead><tr><th>Param</th><th>Default</th><th>Descripción</th></tr></thead>
+          <thead><tr><th>Param</th><th>Default</th><th data-i18n="db.th-desc">Description</th></tr></thead>
           <tbody>
-            <tr><td class="param-name">table</td><td class="param-opt">—</td><td class="param-desc">Nombre de la tabla</td></tr>
-            <tr><td class="param-name">fields</td><td class="param-opt">*</td><td class="param-desc">Columnas a seleccionar</td></tr>
-            <tr><td class="param-name">where</td><td class="param-opt">""</td><td class="param-desc">Cláusula WHERE (sin la palabra WHERE)</td></tr>
-            <tr><td class="param-name">format</td><td class="param-opt">json</td><td class="param-desc"><code>json</code> · <code>csv</code> · <code>table</code></td></tr>
+            <tr><td class="param-name">table</td><td class="param-opt">—</td><td class="param-desc" data-i18n="db.param-table">Table name</td></tr>
+            <tr><td class="param-name">fields</td><td class="param-opt">*</td><td class="param-desc" data-i18n="db.param-fields">Columns to select</td></tr>
+            <tr><td class="param-name">where</td><td class="param-opt">""</td><td class="param-desc" data-i18n="db.param-where">WHERE clause (without the WHERE keyword)</td></tr>
+            <tr><td class="param-name">format</td><td class="param-opt">json</td><td class="param-desc" data-i18n="db.param-format">Output format</td></tr>
           </tbody>
         </table>
         <div class="term">
@@ -678,7 +675,7 @@ db_select "users" "*" "is_active = 1" "csv"</code></pre>
         <span class="fn-sig">(table, fields, values)</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Ejecuta un INSERT. Usar <code>safe_sql_string()</code> para escapar valores de texto.</div>
+        <div class="fn-desc" data-i18n-html="db.insert-desc">Executes an INSERT. Use <code>safe_sql_string()</code> to escape text values.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
           <div class="term-body">
@@ -698,7 +695,7 @@ id=$(db_get_last_insert_id)</code></pre>
         <span class="fn-sig">(table, set_clause, where_clause)</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Ejecuta un UPDATE. Verificar <code>db_get_changes()</code> para saber si afectó filas.</div>
+        <div class="fn-desc" data-i18n-html="db.update-desc">Executes an UPDATE. Check <code>db_get_changes()</code> to know if any rows were affected.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
           <div class="term-body">
@@ -723,7 +720,7 @@ fi</code></pre>
         <span class="fn-sig">(table, where_clause)</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Ejecuta un DELETE. Verificar <code>db_get_changes()</code> para confirmar que algo fue eliminado.</div>
+        <div class="fn-desc" data-i18n-html="db.delete-desc">Executes a DELETE. Check <code>db_get_changes()</code> to confirm something was deleted.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -738,7 +735,7 @@ changes=$(db_get_changes)
       </div>
     </div>
 
-    <h3>Conteo y existencia</h3>
+    <h3 data-i18n="db.h3-count">Count and existence</h3>
 
     <div class="fn-card">
       <div class="fn-header">
@@ -746,7 +743,7 @@ changes=$(db_get_changes)
         <span class="fn-sig">(table, where?) → number</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Retorna el número de filas que cumplen la condición.</div>
+        <div class="fn-desc" data-i18n="db.count-desc">Returns the number of rows that match the condition.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -763,7 +760,7 @@ activos=$(db_count "users" "is_active = 1")  # solo activos</code></pre>
         <span class="fn-sig">(table, where) → bool</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Retorna 0 (true) si existe al menos una fila que cumpla la condición, 1 (false) si no.</div>
+        <div class="fn-desc" data-i18n="db.exists-desc">Returns 0 (true) if at least one row matches the condition, 1 (false) if not.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -785,7 +782,7 @@ fi</code></pre>
         <span class="fn-sig">(select, table1, table2, on, where?, order?, format?)</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">INNER JOIN entre dos tablas.</div>
+        <div class="fn-desc" data-i18n="db.inner-join-desc">INNER JOIN between two tables.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
           <div class="term-body">
@@ -808,7 +805,7 @@ fi</code></pre>
         <span class="fn-sig">(select, table1, table2, on, where?, order?, format?)</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">LEFT JOIN entre dos tablas. Incluye filas de <code>table1</code> sin match en <code>table2</code>.</div>
+        <div class="fn-desc" data-i18n-html="db.left-join-desc">LEFT JOIN between two tables. Includes rows from <code>table1</code> without a match in <code>table2</code>.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -829,7 +826,7 @@ fi</code></pre>
         <span class="fn-sig">(select, from, joins, where?, group_by?, having?, order?, limit?, format?)</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">JOIN múltiple con soporte completo para GROUP BY, HAVING, ORDER BY y LIMIT.</div>
+        <div class="fn-desc" data-i18n="db.multi-join-desc">Multiple JOIN with full support for GROUP BY, HAVING, ORDER BY and LIMIT.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
           <div class="term-body">
@@ -854,11 +851,11 @@ fi</code></pre>
         <span class="fn-sig">(select, from, where?, group_by?, having?, format?)</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Queries de agregación — SUM, COUNT, AVG, MIN, MAX con GROUP BY y HAVING.</div>
+        <div class="fn-desc" data-i18n="db.aggregate-desc">Aggregation queries — SUM, COUNT, AVG, MIN, MAX with GROUP BY and HAVING.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
           <div class="term-body">
-            <pre><code class="language-bash"># Total vendido por producto
+            <pre><code class="language-bash"># Total sold per product
 result=$(db_aggregate \
     "product_id, SUM(quantity) AS total_sold" \
     "orders" \
@@ -879,7 +876,7 @@ result=$(db_aggregate \
         <span class="fn-sig">(query, format?) → string</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Ejecuta SQL arbitrario contra la base de datos. Retorna el resultado en el formato especificado.</div>
+        <div class="fn-desc" data-i18n="db.execute-desc">Executes arbitrary SQL against the database. Returns the result in the specified format.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
           <div class="term-body">
@@ -900,7 +897,7 @@ execute_query "CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);"</cod
       </div>
     </div>
 
-    <h3>Utilidades de DB</h3>
+    <h3 data-i18n="db.h3-utils">DB utilities</h3>
 
     <div class="fn-card">
       <div class="fn-header">
@@ -908,7 +905,7 @@ execute_query "CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);"</cod
         <span class="fn-sig">(value: string) → string</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Escapa comillas simples y envuelve el valor en comillas SQL. <strong>Siempre usar para valores de texto en queries.</strong></div>
+        <div class="fn-desc" data-i18n-html="db.safe-sql-desc">Escapes single quotes and wraps the value in SQL quotes. <strong>Always use for text values in queries.</strong></div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -923,7 +920,7 @@ db_insert "users" "username" "$(safe_sql_string "$username")"</code></pre>
     </div>
 
     <div class="callout callout-warn">
-      <strong>WARN</strong>Nunca interpolar variables directamente en queries sin <code>safe_sql_string()</code>. Los valores numéricos validados con <code>validate_integer()</code> son la única excepción segura.
+      <strong>WARN</strong><span data-i18n-html="db.callout">Never interpolate variables directly into queries without <code>safe_sql_string()</code>. Numeric values validated with <code>validate_integer()</code> are the only safe exception.</span>
     </div>
   </section>
 
@@ -933,8 +930,7 @@ db_insert "users" "username" "$(safe_sql_string "$username")"</code></pre>
   <section id="validation">
     <h2>Validation</h2>
 
-    <p>Módulo de validación para inputs de usuario. Todas las funciones retornan
-    0 (success) o 1 (failure) para uso directo en condicionales.</p>
+    <p data-i18n="val.p1">Validation module for user inputs. All functions return 0 (success) or 1 (failure) for direct use in conditionals.</p>
 
     <div class="fn-card">
       <div class="fn-header">
@@ -942,7 +938,7 @@ db_insert "users" "username" "$(safe_sql_string "$username")"</code></pre>
         <span class="fn-sig">(json_body, ...fields) → bool</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Verifica que todos los campos especificados existan y no sean nulos en el JSON recibido.</div>
+        <div class="fn-desc" data-i18n="val.required-desc">Verifies that all specified fields exist and are not null in the received JSON.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
           <div class="term-body">
@@ -962,7 +958,7 @@ fi</code></pre>
         <span class="fn-sig">(email: string) → bool</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Valida formato de email con regex. No verifica existencia del dominio.</div>
+        <div class="fn-desc" data-i18n="val.email-desc">Validates email format with regex. Does not verify domain existence.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -983,7 +979,7 @@ fi</code></pre>
         <span class="fn-sig">(value: string) → bool</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Verifica que el valor sea un entero positivo (<code>[0-9]+</code>). Útil para IDs antes de usarlos en queries.</div>
+        <div class="fn-desc" data-i18n-html="val.integer-desc">Verifies that the value is a positive integer (<code>[0-9]+</code>). Useful for IDs before using them in queries.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -1001,7 +997,7 @@ validate_integer "3.14"  # → 1 (false)</code></pre>
         <span class="fn-sig">(param: string) → bool</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Valida que un path param sea entero. Si falla, escribe automáticamente un <code>400</code> y retorna 1. Patrón estándar en todos los handlers con <code>{id}</code>.</div>
+        <div class="fn-desc" data-i18n-html="val.path-param-desc">Validates that a path param is an integer. If it fails, automatically writes a <code>400</code> and returns 1. Standard pattern in all handlers with <code>{id}</code>.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -1021,7 +1017,7 @@ validate_integer "3.14"  # → 1 (false)</code></pre>
         <span class="fn-sig">(json: string) → bool</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Verifica que el string sea JSON válido usando <code>jq empty</code>.</div>
+        <div class="fn-desc" data-i18n-html="val.json-desc">Verifies that the string is valid JSON using <code>jq empty</code>.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -1041,7 +1037,7 @@ fi</code></pre>
         <span class="fn-sig">(input: string) → string</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Elimina caracteres de control no imprimibles (<code>\x00-\x1F</code> y <code>\x7F</code>) del input.</div>
+        <div class="fn-desc" data-i18n-html="val.sanitize-desc">Removes non-printable control characters (<code>\x00-\x1F</code> and <code>\x7F</code>) from input.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -1058,17 +1054,16 @@ fi</code></pre>
   <section id="middleware">
     <h2>Middleware</h2>
 
-    <p>El middleware pipeline se ejecuta <em>antes</em> de que la request llegue al route handler.
-    Si un middleware retorna 1 (failure), el pipeline se detiene y no se llama al handler.</p>
+    <p data-i18n-html="mw.p1">The middleware pipeline runs <em>before</em> the request reaches the route handler. If a middleware returns 1 (failure), the pipeline stops and the handler is not called.</p>
 
     <div class="pipeline">
-      <span class="pipe-step">Request</span>
+      <span class="pipe-step" data-i18n="mw.pipe-request">Request</span>
       <span class="pipe-arrow">→</span>
       <span class="pipe-step">logging_middleware</span>
       <span class="pipe-arrow">→</span>
       <span class="pipe-step">cors_middleware</span>
       <span class="pipe-arrow">→</span>
-      <span class="pipe-step">auth_middleware (opt)</span>
+      <span class="pipe-step" data-i18n="mw.pipe-auth">auth_middleware (opt)</span>
       <span class="pipe-arrow">→</span>
       <span class="pipe-step route">handler()</span>
     </div>
@@ -1079,7 +1074,7 @@ fi</code></pre>
         <span class="fn-sig">(function_name: string)</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Agrega una función al pipeline. El orden de llamada refleja el orden de registro.</div>
+        <div class="fn-desc" data-i18n="mw.add-desc">Adds a function to the pipeline. Call order reflects registration order.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">api.sh</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
           <div class="term-body">
@@ -1092,10 +1087,10 @@ add_middleware "rate_limit_middleware"  # custom</code></pre>
       </div>
     </div>
 
-    <h3>Middlewares built-in</h3>
+    <h3 data-i18n="mw.h3-builtin">Built-in middlewares</h3>
 
     <h4>logging_middleware</h4>
-    <p>Escribe cada request a <code>$LOG_FILE</code> con timestamp, método y path.</p>
+    <p data-i18n-html="mw.logging-p">Writes each request to <code>$LOG_FILE</code> with timestamp, method and path.</p>
     <div class="term">
       <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">access.log</span></div>
       <div class="term-body">
@@ -1107,12 +1102,10 @@ add_middleware "rate_limit_middleware"  # custom</code></pre>
     </div>
 
     <h4>cors_middleware</h4>
-    <p>Intercepta requests <code>OPTIONS</code> (preflight) y responde <code>204 No Content</code>
-    con los headers CORS. Para el resto de métodos, retorna 0 y deja pasar.</p>
+    <p data-i18n-html="mw.cors-p">Intercepts <code>OPTIONS</code> requests (preflight) and responds with <code>204 No Content</code> with CORS headers. For other methods, returns 0 and lets the request through.</p>
 
     <h4>auth_middleware</h4>
-    <p>Ejemplo incluido: protege rutas bajo <code>/protected/*</code>. Verifica que el header
-    <code>Authorization</code> esté presente; si no, responde <code>401</code>.</p>
+    <p data-i18n-html="mw.auth-p">Included example: protects routes under <code>/protected/*</code>. Verifies that the <code>Authorization</code> header is present; if not, responds with <code>401</code>.</p>
 
     <div class="term">
       <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">middleware.sh — auth_middleware</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
@@ -1133,13 +1126,12 @@ add_middleware "rate_limit_middleware"  # custom</code></pre>
       </div>
     </div>
 
-    <h3>Middleware custom</h3>
+    <h3 data-i18n="mw.h3-custom">Custom middleware</h3>
 
-    <p>Un middleware es cualquier función Bash que recibe <code>(method, path, body)</code>
-    y retorna 0 para continuar o 1 para cortar el pipeline.</p>
+    <p data-i18n-html="mw.custom-p">A middleware is any Bash function that receives <code>(method, path, body)</code> and returns 0 to continue or 1 to stop the pipeline.</p>
 
     <div class="term">
-      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo — rate limiter simple</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo — simple rate limiter</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
       <div class="term-body">
         <pre><code class="language-bash">rate_limit_middleware() {
     local method="$1"
@@ -1185,11 +1177,9 @@ add_middleware "rate_limit_middleware"</code></pre>
   <section id="migrations">
     <h2>Migrations</h2>
 
-    <p>El sistema de migraciones trackea qué scripts ya se ejecutaron en la tabla
-    <code>migrations</code> de SQLite. Cada migración tiene funciones <code>up()</code>
-    y <code>down()</code>.</p>
+    <p data-i18n-html="mg.p1">The migration system tracks which scripts have already been executed in the SQLite <code>migrations</code> table. Each migration has <code>up()</code> and <code>down()</code> functions.</p>
 
-    <h3>Comandos de migrate.sh</h3>
+    <h3 data-i18n="mg.h3-commands">migrate.sh commands</h3>
 
     <div class="term">
       <div class="term-bar">
@@ -1198,22 +1188,22 @@ add_middleware "rate_limit_middleware"</code></pre>
         <button class="term-copy" onclick="copyCode(this)">copy</button>
       </div>
       <div class="term-body">
-        <pre><code class="language-bash"># Ejecutar todas las migraciones pendientes
+        <pre><code class="language-bash"># Run all pending migrations
 ./migrate.sh
 
-# Ver estado de todas las migraciones
+# View status of all migrations
 ./migrate.sh status
 
-# Rollback de la última migración
+# Rollback the last migration
 ./migrate.sh rollback
 
-# Rollback de una migración específica
+# Rollback a specific migration
 ./migrate.sh rollback 20250915_220501_users.sh
 
-# Drop total + re-ejecutar todas (DESTRUCTIVO)
+# Drop all + re-run all (DESTRUCTIVE)
 ./migrate.sh fresh
 
-# Rollback de TODAS las migraciones
+# Rollback ALL migrations
 ./migrate.sh reset</code></pre>
       </div>
     </div>
@@ -1230,7 +1220,7 @@ add_middleware "rate_limit_middleware"</code></pre>
       </div>
     </div>
 
-    <h3>Crear una migración</h3>
+    <h3 data-i18n="mg.h3-create">Create a migration</h3>
 
     <div class="term">
       <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">bash</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
@@ -1246,7 +1236,7 @@ add_middleware "rate_limit_middleware"</code></pre>
       </div>
     </div>
 
-    <p>El script genera un archivo con timestamp en <code>migrations/</code> listo para editar:</p>
+    <p data-i18n-html="mg.create-p">The script generates a timestamped file in <code>migrations/</code> ready to edit:</p>
 
     <div class="term">
       <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">migrations/20260427_151148_create_posts_table.sh</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
@@ -1295,20 +1285,19 @@ fi</code></pre>
   <section id="schema">
     <h2>Schema Builder</h2>
 
-    <p>Helpers que generan fragmentos de DDL SQL. Se usan dentro de las funciones
-    <code>up()</code> de las migraciones.</p>
+    <p data-i18n-html="schema.p1">Helpers that generate DDL SQL fragments. Used inside migration <code>up()</code> functions.</p>
 
     <h3>Column types</h3>
 
     <table class="env-table">
       <thead>
-        <tr><th>Función</th><th>SQL generado</th><th>Firma</th></tr>
+        <tr><th data-i18n="schema.th-fn">Function</th><th data-i18n="schema.th-sql">Generated SQL</th><th data-i18n="schema.th-sig">Signature</th></tr>
       </thead>
       <tbody>
         <tr>
           <td class="env-key">id_column()</td>
           <td><code>id INTEGER PRIMARY KEY AUTOINCREMENT</code></td>
-          <td class="env-desc">sin parámetros</td>
+          <td class="env-desc" data-i18n="schema.no-params">no parameters</td>
         </tr>
         <tr>
           <td class="env-key">string_column()</td>
@@ -1333,21 +1322,21 @@ fi</code></pre>
         <tr>
           <td class="env-key">datetime_column()</td>
           <td><code>name DATETIME [NOT NULL] [DEFAULT ...]</code></td>
-          <td class="env-desc">(name, default="", nullable=true) — usa "now" para CURRENT_TIMESTAMP</td>
+          <td class="env-desc" data-i18n="schema.datetime-desc">(name, default="", nullable=true) — use "now" for CURRENT_TIMESTAMP</td>
         </tr>
         <tr>
           <td class="env-key">timestamps_columns()</td>
           <td><code>created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at...</code></td>
-          <td class="env-desc">sin parámetros — agrega ambas</td>
+          <td class="env-desc" data-i18n="schema.timestamps-desc">no parameters — adds both</td>
         </tr>
       </tbody>
     </table>
 
-    <h3>Constraints e Indexes</h3>
+    <h3 data-i18n="schema.h3-constraints">Constraints and Indexes</h3>
 
     <table class="env-table">
       <thead>
-        <tr><th>Función</th><th>SQL generado</th><th>Firma</th></tr>
+        <tr><th data-i18n="schema.th-fn">Function</th><th data-i18n="schema.th-sql">Generated SQL</th><th data-i18n="schema.th-sig">Signature</th></tr>
       </thead>
       <tbody>
         <tr>
@@ -1394,7 +1383,7 @@ fi</code></pre>
     </table>
 
     <div class="term">
-      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">schema builder — ejemplo completo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+      <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">schema builder — full example</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
       <div class="term-body">
         <pre><code class="language-bash">up() {
     local columns="$(id_column),
@@ -1432,7 +1421,7 @@ fi</code></pre>
         <span class="fn-sig">(body, field) → string</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Extrae un campo del JSON del body. Retorna vacío si el campo no existe o es <code>null</code>.</div>
+        <div class="fn-desc" data-i18n-html="utils.get-field-desc">Extracts a field from the body JSON. Returns empty if the field doesn't exist or is <code>null</code>.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -1451,7 +1440,7 @@ missing=$(get_json_field "$body" "email")      # "" (vacío)</code></pre>
         <span class="fn-sig">(body, field) → string | exit 1</span>
       </div>
       <div class="fn-body">
-        <div class="fn-desc">Como <code>get_json_field</code> pero retorna 1 si el campo está vacío. Útil en combinación con <code>||</code>.</div>
+        <div class="fn-desc" data-i18n-html="utils.get-required-desc">Like <code>get_json_field</code> but returns 1 if the field is empty. Useful combined with <code>||</code>.</div>
         <div class="term">
           <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
           <div class="term-body">
@@ -1472,9 +1461,9 @@ missing=$(get_json_field "$body" "email")      # "" (vacío)</code></pre>
   <section id="example">
     <h2>Full Example</h2>
 
-    <p>CRUD completo de posts con validaciones, JOIN y migración.</p>
+    <p data-i18n="example.p1">Complete CRUD for posts with validations, JOIN and migration.</p>
 
-    <h3>Migración</h3>
+    <h3 data-i18n="example.h3-migration">Migration</h3>
     <div class="term">
       <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">migrations/20260427_create_posts_table.sh</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
       <div class="term-body">
@@ -1499,7 +1488,7 @@ down() { drop_table "posts"; }
       </div>
     </div>
 
-    <h3>Route handler</h3>
+    <h3 data-i18n="example.h3-handler">Route handler</h3>
     <div class="term">
       <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">routes/posts.sh</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
       <div class="term-body">
@@ -1618,24 +1607,24 @@ delete_post() {
       </div>
     </div>
 
-    <h3>Test con curl</h3>
+    <h3 data-i18n="example.h3-test">Test with curl</h3>
     <div class="term">
       <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">bash</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
       <div class="term-body">
-        <pre><code class="language-bash"># Listar posts con JOIN de autor
+        <pre><code class="language-bash"># List posts with author JOIN
 curl http://localhost:8082/posts
 
-# Crear post
+# Create post
 curl -X POST http://localhost:8082/posts \
   -H "Content-Type: application/json" \
-  -d '{"title":"Hello World","body":"Mi primer post","user_id":1}'
+  -d '{"title":"Hello World","body":"My first post","user_id":1}'
 
-# Actualizar
+# Update
 curl -X PUT http://localhost:8082/posts/1 \
   -H "Content-Type: application/json" \
   -d '{"title":"Updated","published":1}'
 
-# Eliminar
+# Delete
 curl -X DELETE http://localhost:8082/posts/1</code></pre>
       </div>
     </div>
@@ -1647,16 +1636,16 @@ curl -X DELETE http://localhost:8082/posts/1</code></pre>
   <section id="apiref">
     <h2>API Reference</h2>
 
-    <p>Endpoints disponibles en la instalación por defecto.</p>
+    <p data-i18n="apiref.p1">Endpoints available in the default installation.</p>
 
     <table class="api-table">
       <thead>
         <tr>
-          <th>Método</th>
+          <th data-i18n="apiref.th-method">Method</th>
           <th>Path</th>
           <th>Body</th>
-          <th>Respuesta</th>
-          <th>Descripción</th>
+          <th data-i18n="apiref.th-response">Response</th>
+          <th data-i18n="apiref.th-desc">Description</th>
         </tr>
       </thead>
       <tbody>
@@ -1665,98 +1654,98 @@ curl -X DELETE http://localhost:8082/posts/1</code></pre>
           <td class="api-path">/</td>
           <td class="api-code">—</td>
           <td class="api-code">200 text/plain</td>
-          <td class="api-desc">Health check raíz</td>
+          <td class="api-desc" data-i18n="apiref.root-desc">Root health check</td>
         </tr>
         <tr>
           <td><span class="api-method api-get">GET</span></td>
           <td class="api-path">/users</td>
           <td class="api-code">—</td>
           <td class="api-code">200 JSON[]</td>
-          <td class="api-desc">Lista todos los usuarios</td>
+          <td class="api-desc" data-i18n="apiref.users-list">List all users</td>
         </tr>
         <tr>
           <td><span class="api-method api-post">POST</span></td>
           <td class="api-path">/users</td>
           <td class="api-code">{ username, email? }</td>
           <td class="api-code">201 JSON</td>
-          <td class="api-desc">Crea un usuario</td>
+          <td class="api-desc" data-i18n="apiref.users-create">Create a user</td>
         </tr>
         <tr>
           <td><span class="api-method api-get">GET</span></td>
           <td class="api-path">/users/{id}</td>
           <td class="api-code">—</td>
           <td class="api-code">200 / 404</td>
-          <td class="api-desc">Obtiene un usuario por ID</td>
+          <td class="api-desc" data-i18n="apiref.users-get">Get a user by ID</td>
         </tr>
         <tr>
           <td><span class="api-method api-put">PUT</span></td>
           <td class="api-path">/users/{id}</td>
           <td class="api-code">{ username, email? }</td>
           <td class="api-code">200 / 404</td>
-          <td class="api-desc">Actualiza un usuario</td>
+          <td class="api-desc" data-i18n="apiref.users-update">Update a user</td>
         </tr>
         <tr>
           <td><span class="api-method api-delete">DELETE</span></td>
           <td class="api-path">/users/{id}</td>
           <td class="api-code">—</td>
           <td class="api-code">204 / 404</td>
-          <td class="api-desc">Elimina un usuario</td>
+          <td class="api-desc" data-i18n="apiref.users-delete">Delete a user</td>
         </tr>
         <tr>
           <td><span class="api-method api-get">GET</span></td>
           <td class="api-path">/products</td>
           <td class="api-code">—</td>
           <td class="api-code">200 JSON[]</td>
-          <td class="api-desc">Lista todos los productos</td>
+          <td class="api-desc" data-i18n="apiref.products-list">List all products</td>
         </tr>
         <tr>
           <td><span class="api-method api-post">POST</span></td>
           <td class="api-path">/products</td>
           <td class="api-code">{ name, price, description?, stock_quantity? }</td>
           <td class="api-code">201 JSON</td>
-          <td class="api-desc">Crea un producto</td>
+          <td class="api-desc" data-i18n="apiref.products-create">Create a product</td>
         </tr>
         <tr>
           <td><span class="api-method api-get">GET</span></td>
           <td class="api-path">/products/{id}</td>
           <td class="api-code">—</td>
           <td class="api-code">200 / 404</td>
-          <td class="api-desc">Obtiene un producto por ID</td>
+          <td class="api-desc" data-i18n="apiref.products-get">Get a product by ID</td>
         </tr>
         <tr>
           <td><span class="api-method api-put">PUT</span></td>
           <td class="api-path">/products/{id}</td>
           <td class="api-code">{ name, price, description?, stock_quantity? }</td>
           <td class="api-code">200 / 404</td>
-          <td class="api-desc">Actualiza un producto</td>
+          <td class="api-desc" data-i18n="apiref.products-update">Update a product</td>
         </tr>
         <tr>
           <td><span class="api-method api-delete">DELETE</span></td>
           <td class="api-path">/products/{id}</td>
           <td class="api-code">—</td>
           <td class="api-code">204 / 404</td>
-          <td class="api-desc">Elimina un producto</td>
+          <td class="api-desc" data-i18n="apiref.products-delete">Delete a product</td>
         </tr>
         <tr>
           <td><span class="api-method api-get">GET</span></td>
           <td class="api-path">/orders</td>
           <td class="api-code">—</td>
           <td class="api-code">200 JSON[]</td>
-          <td class="api-desc">Lista todas las órdenes (con JOIN users + products)</td>
+          <td class="api-desc" data-i18n="apiref.orders-list">List all orders (with JOIN users + products)</td>
         </tr>
         <tr>
           <td><span class="api-method api-get">GET</span></td>
           <td class="api-path">/orders/{id}</td>
           <td class="api-code">—</td>
           <td class="api-code">200 / 404</td>
-          <td class="api-desc">Obtiene una orden por ID</td>
+          <td class="api-desc" data-i18n="apiref.orders-get">Get an order by ID</td>
         </tr>
         <tr>
           <td><span class="api-method api-post">POST</span></td>
           <td class="api-path">/orders</td>
           <td class="api-code">{ user_id, product_id, quantity }</td>
           <td class="api-code">201 JSON</td>
-          <td class="api-desc">Crea una orden</td>
+          <td class="api-desc" data-i18n="apiref.orders-create">Create an order</td>
         </tr>
       </tbody>
     </table>
@@ -1769,7 +1758,7 @@ curl -X DELETE http://localhost:8082/posts/1</code></pre>
   <section id="roadmap">
     <h2>Roadmap</h2>
 
-    <p>Mejoras planificadas ordenadas por impacto en rendimiento y escalabilidad.</p>
+    <p data-i18n="roadmap.p1">Planned improvements ordered by impact on performance and scalability.</p>
 
     <div id="roadmap-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;"></div>
     <div id="roadmap-list"></div>
@@ -1801,6 +1790,7 @@ curl -X DELETE http://localhost:8082/posts/1</code></pre>
 
 </main>
 
+<script src="i18n.js" defer></script>
 <script src="main.js" defer></script>
 </body>
 </html>

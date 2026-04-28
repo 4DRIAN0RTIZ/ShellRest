@@ -489,5 +489,30 @@ code:not(.hljs) {
   #content { margin-left: 0; padding: 32px 24px; }
 }
 
+/* ── LANGUAGE SWITCHER ── */
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.lang-btn {
+  font-family: var(--font);
+  font-size: 11px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 2px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.lang-btn:hover { color: var(--text); border-color: var(--text-dim); }
+.lang-btn.active { color: var(--green); border-color: var(--green); }
+
+.lang-sep { color: var(--border); font-size: 11px; }
+
 /* ── HIGHLIGHT.JS OVERRIDE ── */
 .hljs { background: transparent !important; padding: 0 !important; }
