@@ -182,6 +182,24 @@ cd shellrest
       </div>
     </div>
 
+    <h3 data-i18n="qs.h3-scaffold">Scaffold a new project</h3>
+
+    <p data-i18n-html="qs.scaffold-desc"><code>new.sh</code> copies the framework, an empty <code>routes/</code> and <code>migrations/</code> into a new directory. Fails if the directory already exists.</p>
+
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span>
+        <span class="term-title">bash</span>
+        <button class="term-copy" onclick="copyCode(this)">copy</button>
+      </div>
+      <div class="term-body">
+        <pre><code class="language-bash">./new.sh my-api
+cd my-api
+./migrate.sh
+./server.sh</code></pre>
+      </div>
+    </div>
+
     <h3 data-i18n="qs.h3-first">First request</h3>
 
     <div class="term">
@@ -244,6 +262,7 @@ get_health() {
 <span class="tree-file">├── <span class="tree-key">api.sh</span>            <span class="tree-desc" data-i18n="tree.api"># Entry point per request — parses HTTP, runs pipeline</span></span>
 <span class="tree-file">├── <span class="tree-key">migrate.sh</span>        <span class="tree-desc" data-i18n="tree.migrate"># Migration runner</span></span>
 <span class="tree-file">├── <span class="tree-key">make_migration.sh</span> <span class="tree-desc" data-i18n="tree.make-migration"># Migration file generator</span></span>
+<span class="tree-file">├── <span class="tree-key">new.sh</span>             <span class="tree-desc" data-i18n="tree.new"># Scaffolds a new project into a directory</span></span>
 <span class="tree-file">├── .env               <span class="tree-desc" data-i18n="tree.env"># Environment variables (optional)</span></span>
 <span class="tree-dir">├── shellrest/         <span class="tree-desc" data-i18n="tree.shellrest"># Framework core</span></span>
 <span class="tree-file">│   ├── <span class="tree-key">config.sh</span>     <span class="tree-desc" data-i18n="tree.config"># load_config, get_config, debug_log</span></span>

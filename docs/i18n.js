@@ -14,6 +14,8 @@ const TRANSLATIONS = {
 
     // 02 Quick Start
     'qs.h3-clone': 'Clone and initialize',
+    'qs.h3-scaffold': 'Scaffold a new project',
+    'qs.scaffold-desc': '<code>new.sh</code> copies the framework, an empty <code>routes/</code> and <code>migrations/</code> into a new directory. Fails if the directory already exists.',
     'qs.h3-first': 'First request',
     'qs.h3-route': 'Create a new route in 60 seconds',
     'qs.callout': 'ShellRest automatically loads all <code>*.sh</code> files inside <code>routes/</code>. No need to register the file.',
@@ -23,6 +25,7 @@ const TRANSLATIONS = {
     'tree.api': '# Entry point per request — parses HTTP, runs pipeline',
     'tree.migrate': '# Migration runner',
     'tree.make-migration': '# Migration file generator',
+    'tree.new': '# Scaffolds a new project into a directory',
     'tree.env': '# Environment variables (optional)',
     'tree.shellrest': '# Framework core',
     'tree.config': '# load_config, get_config, debug_log',
@@ -199,6 +202,8 @@ const TRANSLATIONS = {
 
     // 02 Quick Start
     'qs.h3-clone': 'Clonar e inicializar',
+    'qs.h3-scaffold': 'Generar un proyecto nuevo',
+    'qs.scaffold-desc': '<code>new.sh</code> copia el framework, un <code>routes/</code> vacío y <code>migrations/</code> en un directorio nuevo. Falla si el directorio ya existe.',
     'qs.h3-first': 'Primera request',
     'qs.h3-route': 'Crear una ruta nueva en 60 segundos',
     'qs.callout': 'ShellRest carga automáticamente todos los <code>*.sh</code> dentro de <code>routes/</code>. No necesitas registrar el archivo.',
@@ -208,6 +213,7 @@ const TRANSLATIONS = {
     'tree.api': '# Entry point por request — parsea HTTP, ejecuta pipeline',
     'tree.migrate': '# Runner de migraciones',
     'tree.make-migration': '# Generador de archivos de migración',
+    'tree.new': '# Genera un proyecto nuevo en un directorio',
     'tree.env': '# Variables de entorno (opcional)',
     'tree.shellrest': '# Core del framework',
     'tree.config': '# load_config, get_config, debug_log',
