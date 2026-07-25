@@ -9,4 +9,4 @@ PORT=$(get_config "port")
 echo "Servidor escuchando en http://localhost:${PORT}"
 echo "Presiona Ctrl+C para detener."
 
-socat TCP-LISTEN:${PORT},fork,reuseaddr EXEC:"./api.sh"
+socat TCP-LISTEN:${PORT},fork,reuseaddr EXEC:"$(dirname "$0")/api.sh"
