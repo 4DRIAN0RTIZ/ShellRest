@@ -287,9 +287,27 @@ function copyCode(btn) {
   });
 }
 
+// ── VERSION ───────────────────────────────────────────────────────────────
+async function loadSidebarVersion() {
+  try {
+    const res = await fetch('changelog.json');
+    if (!res.ok) throw new Error('HTTP error ' + res.status);
+    const data = await res.json();
+    const version = data[0]?.version;
+    if (!version) throw new Error('Version not found in changelog.json');
+    ['sidebar-version-tag', 'hero-version-tag', 'footer-version-tag'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = version;
+    });
+  } catch (error) {
+    console.error('Error fetching changelog.json:', error);
+  }
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   hljs.highlightAll();
   renderRoadmap();
   initScrollspy();
+  loadSidebarVersion();
 });
