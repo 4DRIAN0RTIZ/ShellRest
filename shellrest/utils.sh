@@ -42,7 +42,7 @@ db_insert() {
     local table="$1"
     local fields="$2"
     local values="$3"
-    execute_query "INSERT INTO $table ($fields) VALUES ($values);"
+	execute_query "INSERT INTO $table ($fields) VALUES ($values); SELECT last_insert_rowid();"
 }
 
 db_update() {

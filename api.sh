@@ -39,9 +39,8 @@ if [ "$REQUEST_PATH" != "/" ]; then
     REQUEST_PATH=${REQUEST_PATH%/}
 fi
 
-# Debug: escribir a log para ver qué recibe
-echo "DEBUG: request_line='$request_line'" >> debug.log
-echo "DEBUG: METHOD='$REQUEST_METHOD' PATH='$REQUEST_PATH'" >> debug.log
+debug_log "request_line='$request_line'"
+debug_log "METHOD='$REQUEST_METHOD' PATH='$REQUEST_PATH'"
 
 # Separar query string si existe
 if [[ "$REQUEST_PATH" == *"?"* ]]; then
@@ -53,10 +52,10 @@ fi
 body=""
 if [[ "$REQUEST_METHOD" == "POST" ]] || [[ "$REQUEST_METHOD" == "PUT" ]] || [[ "$REQUEST_METHOD" == "PATCH" ]]; then
     content_length=$(echo -e "$request_headers" | grep -i "content-length" | awk -F': ' '{print $2}' | tr -d '\r')
-    echo "DEBUG: content_length='$content_length'" >> debug.log
+    debug_log "content_length='$content_length'"
     if [ -n "$content_length" ] && [ "$content_length" -gt 0 ]; then
-        body=$(dd bs=1 count="$content_length" 2>/dev/null)
-        echo "DEBUG: body='$body'" >> debug.log
+        body=$(head -c "$content_length")
+        debug_log "body='$body'"
     fi
 fi
 
