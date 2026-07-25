@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.0] - 2026-07-25
+
+### Features
+
+- Load sidebar version dynamically from changelog.json ([12e5f7e](https://github.com/4DRIAN0RTIZ/shellrest/commit/12e5f7ef7983d0e62b7ae3b0c57c4f18bbc06d0c))
+
 ## [0.1.0] - 2026-07-25
 
 ### Bug Fixes
