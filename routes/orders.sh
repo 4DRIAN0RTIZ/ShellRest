@@ -1,9 +1,5 @@
 #!/bin/bash
 
-source "shellrest/http.sh"
-source "shellrest/database.sh"
-source "shellrest/utils.sh"
-
 register_route "GET"  "/orders"      "get_orders"
 register_route "GET"  "/orders/{id}" "get_order"
 register_route "POST" "/orders"      "post_orders"

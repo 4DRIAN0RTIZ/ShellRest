@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source "shellrest/http.sh"
-
 # Registrar rutas
 register_route "GET" "/" "get_root"
 
