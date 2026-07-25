@@ -46,10 +46,9 @@ post_users() {
         return
     fi
 
-    db_insert "users" "username, email" \
-        "$(safe_sql_string "$username"), $(safe_sql_string "$email")"
     local id
-    id=$(db_get_last_insert_id)
+    id=$(db_insert "users" "username, email" \
+        "$(safe_sql_string "$username"), $(safe_sql_string "$email")")
     http_response "201 Created" "application/json" \
         "$(db_select "users" "id, username, email, is_active" "id = $id")"
 }

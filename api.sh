@@ -55,7 +55,7 @@ if [[ "$REQUEST_METHOD" == "POST" ]] || [[ "$REQUEST_METHOD" == "PUT" ]] || [[ "
     content_length=$(echo -e "$request_headers" | grep -i "content-length" | awk -F': ' '{print $2}' | tr -d '\r')
     echo "DEBUG: content_length='$content_length'" >> debug.log
     if [ -n "$content_length" ] && [ "$content_length" -gt 0 ]; then
-        body=$(dd bs=1 count="$content_length" 2>/dev/null)
+        body=$(head -c "$content_length")
         echo "DEBUG: body='$body'" >> debug.log
     fi
 fi
