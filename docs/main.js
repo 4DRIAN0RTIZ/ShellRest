@@ -7,7 +7,7 @@ const ROADMAP = [
       en: "Concurrency — replace nc + FIFO with socat fork",
       es: "Concurrencia — reemplazar nc + FIFO con socat fork",
     },
-    status: "pending",
+    status: "done",
     file: "server.sh:23",
     desc: {
       en: "<code>server.sh</code> uses a loop with <code>nc</code> + FIFO — one connection at a time. Concurrent requests queue up or are dropped. No real parallelism.",
@@ -39,7 +39,7 @@ const ROADMAP = [
       en: "Body reading — replace dd bs=1 with head -c",
       es: "Lectura de body — reemplazar dd bs=1 con head -c",
     },
-    status: "pending",
+    status: "done",
     file: "api.sh:58",
     desc: {
       en: "Each POST/PUT body is read with <code>dd bs=1</code> — one syscall per byte. A 100KB payload generates 102,400 unnecessary syscalls.",
