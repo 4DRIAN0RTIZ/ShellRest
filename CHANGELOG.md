@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.2] - 2026-07-25
+
+### CI
+
+- Add automated changelog and release workflows ([1b8bb4e](https://github.com/4DRIAN0RTIZ/shellrest/commit/1b8bb4eae2c5a14a881d5f9469c55162902e3a6a))
+
+### Chore
+
+- Untrack .github from gitignore ([9f3fde5](https://github.com/4DRIAN0RTIZ/shellrest/commit/9f3fde5669234b81602632f82a4f404f4d04816b))
+
 ## [0.2.1] - 2026-07-25
 
 ### Bug Fixes
