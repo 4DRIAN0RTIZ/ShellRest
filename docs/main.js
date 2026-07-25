@@ -7,7 +7,8 @@ const ROADMAP = [
       en: "Concurrency — replace nc + FIFO with socat fork",
       es: "Concurrencia — reemplazar nc + FIFO con socat fork",
     },
-    status: "pending",
+    status: "done",
+    commit: "98c88b5",
     file: "server.sh:23",
     desc: {
       en: "<code>server.sh</code> uses a loop with <code>nc</code> + FIFO — one connection at a time. Concurrent requests queue up or are dropped. No real parallelism.",
@@ -39,7 +40,8 @@ const ROADMAP = [
       en: "Body reading — replace dd bs=1 with head -c",
       es: "Lectura de body — reemplazar dd bs=1 con head -c",
     },
-    status: "pending",
+    status: "done",
+    commit: "19226b0",
     file: "api.sh:58",
     desc: {
       en: "Each POST/PUT body is read with <code>dd bs=1</code> — one syscall per byte. A 100KB payload generates 102,400 unnecessary syscalls.",
@@ -67,7 +69,8 @@ const ROADMAP = [
       en: "Debug logs — remove hardcoded echo statements in production",
       es: "Debug logs — eliminar echo hardcodeados en production",
     },
-    status: "pending",
+    status: "done",
+    commit: "7c33f49",
     file: "api.sh:43,44,56,59",
     desc: {
       en: "<code>api.sh</code> has 4 active <code>echo \"DEBUG: ...\" >> debug.log</code> lines in production. Synchronous disk I/O on every request; file grows without limit or rotation.",
@@ -95,7 +98,8 @@ const ROADMAP = [
       en: "Double source — remove redundant imports in route files",
       es: "Double source — eliminar imports redundantes en route files",
     },
-    status: "pending",
+    status: "done",
+    commit: "3ef25c7",
     file: "routes/*.sh:3-5",
     desc: {
       en: "Each route file sources <code>http.sh</code>, <code>database.sh</code> and <code>utils.sh</code> at the top. <code>api.sh</code> already loaded them before calling <code>load_routes()</code> — they are parsed and executed twice per request.",
@@ -113,7 +117,7 @@ const ROADMAP = [
         en: "routes/users.sh — proposed",
         es: "routes/users.sh — propuesto",
       },
-      code: `#!/bin/bash\n\n# Sin source — el contexto ya existe cuando api.sh llama load_routes()\nregister_route "GET" "/users" "get_users"`,
+      code: `#!/bin/bash\n\nregister_route "GET" "/users" "get_users"`,
     },
   },
 ];
@@ -179,6 +183,7 @@ function renderCard(item) {
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span style="color:var(--text-dim);font-size:11px;font-family:var(--font)">${item.file}</span>
+        ${item.commit ? `<span style="color:var(--text-dim);font-size:11px;font-family:var(--font)">${item.commit}</span>` : ""}
         <span class="roadmap-status-badge" data-id="${item.id}"
           style="color:${s.color};font-size:11px;background:${s.bg};border:1px solid ${s.border};padding:2px 10px;border-radius:3px;cursor:pointer;white-space:nowrap;user-select:none;"
           title="${t('roadmap.badge-title')}"
