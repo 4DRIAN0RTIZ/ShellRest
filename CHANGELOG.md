@@ -2,6 +2,30 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.1] - 2026-07-25
+
+### Bug Fixes
+
+- Resolve api.sh path relative to script location ([4ed3273](https://github.com/4DRIAN0RTIZ/shellrest/commit/4ed3273b2add7a04e227629f88f39b6b37b4816a))
+- Remove redundant framework sourcing in route files ([3ef25c7](https://github.com/4DRIAN0RTIZ/shellrest/commit/3ef25c780ad94bf9410d3a16af5ee21fa7d18e7f))
+- Use debug_log() instead of hardcoded echo to debug.log ([7c33f49](https://github.com/4DRIAN0RTIZ/shellrest/commit/7c33f49de1804821f134658ef0e19d099c60d5f7))
+
+### Documentation
+
+- Mark P1 and P2 as done ([ee5538c](https://github.com/4DRIAN0RTIZ/shellrest/commit/ee5538c3442d9521cd251e6065aa058597c98051))
+- Mark P3/P4 done and reference fix commits ([9efaeed](https://github.com/4DRIAN0RTIZ/shellrest/commit/9efaeed1d4f91f870fb4e5f0d2eb0e1775aff817))
+
+### Refactor
+
+- Return last insert row ID directly from db_insert ([19226b0](https://github.com/4DRIAN0RTIZ/shellrest/commit/19226b01b093390f7e1ec5f671b9b1071f8d7d5c))
+- Replace nc+FIFO with socat for request handling ([98c88b5](https://github.com/4DRIAN0RTIZ/shellrest/commit/98c88b54e9df1ab5f92e5712a10d0791b479a608))
+
+### Merge
+
+- Roadmap P1-P4 fixes into main ([0835b30](https://github.com/4DRIAN0RTIZ/shellrest/commit/0835b30e63c3c9707567f68ab1caf947af3cfacd))
+- Bring in dirname fix from feat/socat ([9c75f6e](https://github.com/4DRIAN0RTIZ/shellrest/commit/9c75f6ed7a2a3b269a1ce02e6dc0062013a70b77))
+- Bring in P2/P3/P4 roadmap fixes from fix/route-double-source ([9e72b43](https://github.com/4DRIAN0RTIZ/shellrest/commit/9e72b4317f284eb7847c7f09a159ede3785ba8b6))
+
 ## [0.2.0] - 2026-07-25
 
 ### Features
