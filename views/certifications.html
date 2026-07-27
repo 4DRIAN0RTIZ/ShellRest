@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>bashboard - Certifications</title>
+  {{{head}}}
+</head>
+<body>
+  {{{nav}}}
+  <main>
+    <h1>Certifications &amp; degrees</h1>
+
+    <h2>Certifications ({{cert_count}})</h2>
+    <table>
+      <tr><th>Title</th><th>Subtitle</th><th>Issuer</th><th>Year</th></tr>
+      {{#each cert_rows}}{{{.}}}{{/each}}
+    </table>
+
+    <h2>Degrees ({{degree_count}})</h2>
+    <table>
+      <tr><th>Title</th><th>Field</th><th>Institution</th><th>Year</th></tr>
+      {{#each degree_rows}}{{{.}}}{{/each}}
+    </table>
+  </main>
+  <footer>100% Bash. No runtime.</footer>
+</body>
+</html>

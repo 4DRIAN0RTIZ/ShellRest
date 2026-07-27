@@ -1,0 +1,46 @@
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --accent: #39d353;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-monospace, SFMono-Regular, "Fira Code", Consolas, monospace;
+    line-height: 1.5;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  main { max-width: 1000px; margin: 0 auto; padding: 24px 20px 60px; }
+  h1 { font-size: 1.6rem; margin: 0 0 6px; }
+  h2 { font-size: 1.1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin: 32px 0 14px; }
+  .subtitle { color: var(--muted); margin: 0 0 24px; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 8px; }
+  .kpi-card { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 6px; padding: 16px; }
+  .kpi-value { font-size: 1.8rem; color: var(--accent); font-weight: bold; }
+  .kpi-label { color: var(--muted); font-size: 0.85rem; }
+  .skill-bar-row { margin: 10px 0; }
+  .skill-bar-label { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 4px; }
+  .skill-bar-track { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 4px; height: 10px; overflow: hidden; }
+  .skill-bar-fill { background: var(--accent); height: 100%; }
+  .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .project-card { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 6px; padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+  .project-card h3 { margin: 0; font-size: 1.05rem; }
+  .project-card p { margin: 0; color: var(--muted); font-size: 0.9rem; flex-grow: 1; }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .badge { background: var(--bg); border: 1px solid var(--border); color: var(--accent); font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; }
+  .links { display: flex; gap: 12px; font-size: 0.85rem; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+  th { color: var(--muted); font-weight: normal; }
+  nav { border-bottom: 1px solid var(--border); background: var(--bg-alt); }
+  nav .nav-inner { max-width: 1000px; margin: 0 auto; padding: 14px 20px; display: flex; gap: 20px; align-items: center; }
+  nav .brand { color: var(--accent); font-weight: bold; margin-right: auto; }
+  footer { text-align: center; color: var(--muted); font-size: 0.8rem; padding: 30px 0 10px; }
+</style>
