@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>{{title}}</title>
+</head>
+
+<body>
+	<h1>{{title}}</h1>
+	<p>{{count}} user(s)</p>
+	<table border="1">
+		<tr>
+			<th>ID</th>
+			<th>Username</th>
+			<th>Email</th>
+			<th>Status</th>
+		</tr>
+		{{#each users}}{{{.}}}{{/each}}
+	</table>
+</body>
+
+</html>
