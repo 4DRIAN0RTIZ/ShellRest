@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.4.0] - 2026-07-28
+
+### Features
+
+- Add changelog generated from conventional commits ([df3416d](https://github.com/4DRIAN0RTIZ/shellrest/commit/df3416d8101ade92f9b01793343e343d795d146e))
+
 ## [0.3.0] - 2026-07-28
 
 ### Features
