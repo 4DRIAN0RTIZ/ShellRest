@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here.
 
+## [0.3.0] - 2026-07-28
+
+### Features
+
+- Link 'Bash REST framework' subtitle to shellrest docs ([c3890de](https://github.com/4DRIAN0RTIZ/shellrest/commit/c3890ded4bade96ba2608209ee10d73b6cd13d7f))
+- Add KPI dashboard served via template engine ([881e827](https://github.com/4DRIAN0RTIZ/shellrest/commit/881e827bca25bf8af711ab11a7719f90a1b849dd))
+- Add minimal handlebars-like template engine with HTML views ([d242510](https://github.com/4DRIAN0RTIZ/shellrest/commit/d242510ac236cf2eec9f788516e0820e310de95f))
+
 ## [0.2.2] - 2026-07-25
 
 ### CI
