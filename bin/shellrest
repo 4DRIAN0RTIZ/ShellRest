@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# shellrest — unified CLI (artisan-style)
+
+_CLI_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+_PROJECT_ROOT="$(dirname "$_CLI_DIR")"
+
+source "${_PROJECT_ROOT}/shellrest/cli/migrate.sh"
+source "${_PROJECT_ROOT}/shellrest/cli/make_migration.sh"
+source "${_PROJECT_ROOT}/shellrest/cli/route_list.sh"
+source "${_PROJECT_ROOT}/shellrest/cli/make_controller.sh"
+
+show_help() {
+    echo "shellrest — Bash REST API framework CLI"
+    echo ""
+    echo "Usage: shellrest <command> [arguments]"
+    echo ""
+    echo "Available commands:"
+    echo "  route:list                        List all registered routes"
+    echo "  make:controller <name> [singular] Generate a new routes/<name>.sh controller"
+    echo "  make:migration <name> [table]     Generate a new migration file"
+    echo "  migrate [run|status|rollback|fresh|reset]"
+    echo "                                     Run and manage migrations"
+    echo "  --help, help                      Show this help"
+    echo ""
+    echo "Examples:"
+    echo "  shellrest route:list"
+    echo "  shellrest make:controller products"
+    echo "  shellrest make:migration create_products_table products"
+    echo "  shellrest migrate status"
+}
+
+main() {
+    local cmd="${1:-help}"
+    [ $# -gt 0 ] && shift
+
+    case "$cmd" in
+        "route:list")
+            cmd_route_list "$@"
+            ;;
+        "make:controller")
+            cmd_make_controller "$@"
+            ;;
+        "make:migration")
+            cmd_make_migration "$@"
+            ;;
+        "migrate")
+            cmd_migrate "$@"
+            ;;
+        "--help"|"help"|"")
+            show_help
+            ;;
+        *)
+            echo "Unknown command: $cmd" >&2
+            echo "Use --help for available commands" >&2
+            return 1
+            ;;
+    esac
+}
+
+main "$@"

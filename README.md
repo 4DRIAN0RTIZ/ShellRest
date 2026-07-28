@@ -21,7 +21,7 @@ A REST API framework written entirely in Bash. No runtime beyond standard Unix t
 
 ```bash
 # Run migrations
-./migrate.sh
+./bin/shellrest migrate
 
 # Start server (default port 8082)
 ./server.sh
@@ -44,6 +44,18 @@ curl -X POST http://localhost:8082/users \
 - **Validation** — JSON, email, integer, required fields, path param guard
 - **Config** — `.env` file, zero required vars, sensible defaults
 
+## CLI Commands
+
+Artisan-style CLI, single entry point at `./bin/shellrest`:
+
+```bash
+shellrest route:list                        # list all registered routes
+shellrest make:controller <name> [singular] # generate routes/<name>.sh with CRUD stubs
+shellrest make:migration <name> [table]     # generate a new migration file
+shellrest migrate [run|status|rollback|fresh|reset]
+shellrest --help
+```
+
 ## Configuration
 
 ```bash
@@ -62,11 +74,11 @@ cp .env.example .env  # optional — all vars have defaults
 
 ```
 shellrest/
-├── server.sh          # TCP server
-├── api.sh             # Per-request entry point
-├── migrate.sh         # Migration runner
-├── make_migration.sh  # Migration generator
-├── shellrest/         # Framework core
+├── bin/
+│   └── shellrest       # Unified CLI (route:list, make:controller, make:migration, migrate)
+├── server.sh           # TCP server
+├── api.sh              # Per-request entry point
+├── shellrest/          # Framework core
 │   ├── config.sh
 │   ├── http.sh
 │   ├── router.sh
@@ -74,9 +86,10 @@ shellrest/
 │   ├── middleware.sh
 │   ├── migration.sh
 │   ├── validation.sh
-│   └── utils.sh
-├── routes/            # Auto-loaded route files
-└── migrations/        # Timestamped migration files
+│   ├── utils.sh
+│   └── cli/            # CLI command implementations
+├── routes/             # Auto-loaded route files
+└── migrations/         # Timestamped migration files
 ```
 
 ## License

@@ -1,35 +1,37 @@
 #!/bin/bash
 
-# Migration generator script
-MIGRATIONS_DIR="migrations"
+# make:migration command library — used by bin/shellrest
 
-if [ ! -d "$MIGRATIONS_DIR" ]; then
-    mkdir -p "$MIGRATIONS_DIR"
-fi
+cmd_make_migration() {
+    MIGRATIONS_DIR="${_PROJECT_ROOT}/migrations"
 
-if [ $# -eq 0 ]; then
-    echo "Usage: $0 <migration_name> [table_name]"
-    echo "Examples:"
-    echo "  $0 create_users_table users"
-    echo "  $0 add_email_to_users"
-    echo "  $0 create_posts_table posts"
-    exit 1
-fi
+    if [ ! -d "$MIGRATIONS_DIR" ]; then
+        mkdir -p "$MIGRATIONS_DIR"
+    fi
 
-migration_name="$1"
-table_name="$2"
+    if [ $# -eq 0 ]; then
+        echo "Usage: shellrest make:migration <migration_name> [table_name]"
+        echo "Examples:"
+        echo "  shellrest make:migration create_users_table users"
+        echo "  shellrest make:migration add_email_to_users"
+        echo "  shellrest make:migration create_posts_table posts"
+        return 1
+    fi
 
-# Generate timestamp
-timestamp=$(date +"%Y%m%d_%H%M%S")
-filename="${timestamp}_${migration_name}.sh"
-filepath="$MIGRATIONS_DIR/$filename"
+    local migration_name="$1"
+    local table_name="$2"
 
-# Determine migration type and generate appropriate template
-if [[ "$migration_name" == create_*_table* ]]; then
-    # Create table migration
-    table_name=${table_name:-$(echo "$migration_name" | sed 's/create_//;s/_table//')}
-    
-    cat > "$filepath" << EOF
+    # Generate timestamp
+    local timestamp=$(date +"%Y%m%d_%H%M%S")
+    local filename="${timestamp}_${migration_name}.sh"
+    local filepath="$MIGRATIONS_DIR/$filename"
+
+    # Determine migration type and generate appropriate template
+    if [[ "$migration_name" == create_*_table* ]]; then
+        # Create table migration
+        table_name=${table_name:-$(echo "$migration_name" | sed 's/create_//;s/_table//')}
+
+        cat > "$filepath" << EOF
 #!/bin/bash
 
 # Migration: $migration_name
@@ -39,17 +41,17 @@ source "\$(dirname "\$0")/../shellrest/migration.sh"
 
 up() {
     echo "Creating table: $table_name"
-    
+
     # Define your table structure here
     local columns="\$(id_column)"
     columns="\$columns, \$(string_column "name" 255 false)"
     columns="\$columns, \$(timestamps_columns)"
-    
+
     # Optional constraints
     local constraints=""
-    
+
     create_table "$table_name" "\$columns" "\$constraints"
-    
+
     # Add indexes if needed
     # create_index "idx_${table_name}_name" "$table_name" "name"
 }
@@ -70,12 +72,12 @@ else
 fi
 EOF
 
-elif [[ "$migration_name" == add_*_to_* ]]; then
-    # Add column migration
-    table_name=${table_name:-$(echo "$migration_name" | sed 's/add_.*_to_//')}
-    column_name=$(echo "$migration_name" | sed 's/add_//;s/_to_.*//')
-    
-    cat > "$filepath" << EOF
+    elif [[ "$migration_name" == add_*_to_* ]]; then
+        # Add column migration
+        table_name=${table_name:-$(echo "$migration_name" | sed 's/add_.*_to_//')}
+        local column_name=$(echo "$migration_name" | sed 's/add_//;s/_to_.*//')
+
+        cat > "$filepath" << EOF
 #!/bin/bash
 
 # Migration: $migration_name
@@ -85,10 +87,10 @@ source "\$(dirname "\$0")/../shellrest/migration.sh"
 
 up() {
     echo "Adding column $column_name to table: $table_name"
-    
+
     # Define your column
     local column_definition="\$(string_column "$column_name")"
-    
+
     add_column "$table_name" "\$column_definition"
 }
 
@@ -110,9 +112,9 @@ else
 fi
 EOF
 
-else
-    # Generic migration template
-    cat > "$filepath" << EOF
+    else
+        # Generic migration template
+        cat > "$filepath" << EOF
 #!/bin/bash
 
 # Migration: $migration_name
@@ -122,7 +124,7 @@ source "\$(dirname "\$0")/../shellrest/migration.sh"
 
 up() {
     echo "Running migration: $migration_name"
-    
+
     # Add your migration logic here
     # Examples:
     # create_table "table_name" "\$(id_column), \$(string_column "name")" ""
@@ -132,7 +134,7 @@ up() {
 
 down() {
     echo "Rolling back migration: $migration_name"
-    
+
     # Add your rollback logic here
     # Examples:
     # drop_table "table_name"
@@ -150,15 +152,16 @@ else
 fi
 EOF
 
-fi
+    fi
 
-# Make the migration file executable
-chmod +x "$filepath"
+    # Make the migration file executable
+    chmod +x "$filepath"
 
-echo "Migration created: $filepath"
-echo ""
-echo "Edit the migration file and then run:"
-echo "  ./migrate.sh"
-echo ""
-echo "To rollback this migration:"
-echo "  ./migrate.sh rollback $filename"
+    echo "Migration created: $filepath"
+    echo ""
+    echo "Edit the migration file and then run:"
+    echo "  shellrest migrate"
+    echo ""
+    echo "To rollback this migration:"
+    echo "  shellrest migrate rollback $filename"
+}

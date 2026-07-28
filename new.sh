@@ -22,10 +22,9 @@ mkdir -p "$target_dir"
 
 cp "$SOURCE_DIR/server.sh" "$target_dir/"
 cp "$SOURCE_DIR/api.sh" "$target_dir/"
-cp "$SOURCE_DIR/migrate.sh" "$target_dir/"
-cp "$SOURCE_DIR/make_migration.sh" "$target_dir/"
 
 cp -r "$SOURCE_DIR/shellrest" "$target_dir/"
+cp -r "$SOURCE_DIR/bin" "$target_dir/"
 
 mkdir -p "$target_dir/routes"
 cp "$SOURCE_DIR/routes/root.sh" "$target_dir/routes/"
@@ -33,5 +32,6 @@ cp "$SOURCE_DIR/routes/root.sh" "$target_dir/routes/"
 mkdir -p "$target_dir/migrations"
 
 chmod +x "$target_dir"/*.sh
+chmod +x "$target_dir/bin/shellrest"
 
 echo "Project '$project_name' created at ./$target_dir"
