@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.5.0] - 2026-07-28
+
+### Features
+
+- Add unified artisan-style CLI entry point ([82f777c](https://github.com/4DRIAN0RTIZ/shellrest/commit/82f777cb4e70473b6396c72b4204d53f8d9df49d))
+
 ## [0.4.1] - 2026-07-28
 
 ### Chore
