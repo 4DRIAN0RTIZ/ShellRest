@@ -27,7 +27,6 @@ body {
   font-family: var(--font);
   font-size: 14px;
   line-height: 1.7;
-  display: flex;
 }
 
 /* ── SIDEBAR ── */
@@ -100,7 +99,6 @@ body {
 /* ── MAIN ── */
 #content {
   margin-left: 260px;
-  flex: 1;
   max-width: 960px;
   padding: 48px 56px;
 }
@@ -447,6 +445,47 @@ code:not(.hljs) {
 .callout-info strong    { color: var(--cyan); }
 .callout-warn strong    { color: var(--amber); }
 .callout-danger strong  { color: var(--red); }
+
+/* ── CHANGELOG ── */
+.changelog-version { margin-top: 20px; }
+
+.changelog-version h3 {
+  font-family: var(--font);
+  font-size: 16px;
+  margin-bottom: 14px;
+  color: var(--text-bright);
+}
+
+.changelog-version h3 .changelog-date { color: var(--text-dim); font-weight: normal; font-size: 13px; }
+
+.changelog-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 12px 20px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.changelog-entry a { color: var(--text-dim); text-decoration: none; font-family: var(--font); font-size: 12px; margin-left: auto; white-space: nowrap; }
+.changelog-entry a:hover { color: var(--cyan); }
+
+.tag {
+  font-family: var(--font);
+  font-size: 11px;
+  padding: .2em .6em;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.tag-feat     { background: rgba(57,211,83,.15);  color: var(--green);  border: 1px solid rgba(57,211,83,.3); }
+.tag-fix      { background: rgba(255,85,85,.12);   color: var(--red);    border: 1px solid rgba(255,85,85,.3); }
+.tag-docs     { background: rgba(139,233,253,.1);  color: var(--cyan);   border: 1px solid rgba(139,233,253,.25); }
+.tag-refactor { background: rgba(189,147,249,.1);  color: var(--purple); border: 1px solid rgba(189,147,249,.25); }
+.tag-chore    { background: var(--bg3);            color: var(--text-dim); border: 1px solid var(--border); }
 .callout-success strong { color: var(--green); }
 
 /* ── MIDDLEWARE PIPELINE ── */

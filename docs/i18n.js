@@ -174,18 +174,10 @@ const TRANSLATIONS = {
     'apiref.orders-get': 'Get an order by ID',
     'apiref.orders-create': 'Create an order',
 
-    // 15 Roadmap
-    'roadmap.p1': 'Planned improvements ordered by impact on performance and scalability.',
-    'roadmap.empty': 'No items with that status.',
-    'roadmap.filter-all': 'all',
-    'roadmap.h4-problem': 'Problem',
-    'roadmap.h4-fix': 'Fix',
-    'roadmap.impact-label': 'IMPACT',
-    'roadmap.badge-title': 'Click to change status',
-    'roadmap.status.pending': 'pending',
-    'roadmap.status.in-progress': 'in progress',
-    'roadmap.status.done': 'done',
-    'roadmap.status.blocked': 'blocked',
+    // 15 Changelog
+    'changelog.p1': 'Latest release notes, generated from Conventional Commits.',
+    'changelog.empty': 'No changelog entries yet.',
+    'changelog.full': 'Full history: ',
   },
 
   es: {
@@ -362,18 +354,10 @@ const TRANSLATIONS = {
     'apiref.orders-get': 'Obtiene una orden por ID',
     'apiref.orders-create': 'Crea una orden',
 
-    // 15 Roadmap
-    'roadmap.p1': 'Mejoras planificadas ordenadas por impacto en rendimiento y escalabilidad.',
-    'roadmap.empty': 'No hay items con ese estado.',
-    'roadmap.filter-all': 'todos',
-    'roadmap.h4-problem': 'Problema',
-    'roadmap.h4-fix': 'Fix',
-    'roadmap.impact-label': 'IMPACTO',
-    'roadmap.badge-title': 'Click para cambiar estado',
-    'roadmap.status.pending': 'pendiente',
-    'roadmap.status.in-progress': 'en progreso',
-    'roadmap.status.done': 'completado',
-    'roadmap.status.blocked': 'bloqueado',
+    // 15 Changelog
+    'changelog.p1': 'Notas de la última release, generadas desde Conventional Commits.',
+    'changelog.empty': 'Sin entradas de changelog todavía.',
+    'changelog.full': 'Historial completo: ',
   },
 };
 
