@@ -2,7 +2,17 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [0.4.1] - 2026-07-28
+
+### Chore
+
+- Update CHANGELOG.md [skip ci] ([e04719d](https://github.com/4DRIAN0RTIZ/shellrest/commit/e04719dd5b87440da99b1e22a85ed3025380bed5))
+
+### Testing
+
+- Add bats test infrastructure and initial unit tests ([fed38c2](https://github.com/4DRIAN0RTIZ/shellrest/commit/fed38c279ac980450dbbc3392c5b7588424e1b81))
+
+## [0.4.0] - 2026-07-28
 
 ### Features
 
