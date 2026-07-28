@@ -7,6 +7,7 @@ source "$(dirname "$0")/shellrest/database.sh"
 source "$(dirname "$0")/shellrest/middleware.sh"
 source "$(dirname "$0")/shellrest/validation.sh"
 source "$(dirname "$0")/shellrest/utils.sh"
+source "$(dirname "$0")/shellrest/template.sh"
 
 load_config
 init_database

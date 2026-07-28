@@ -6,6 +6,37 @@ register_route "GET"    "/users/{id}" "get_user"
 register_route "PUT"    "/users/{id}" "put_user"
 register_route "DELETE" "/users/{id}" "delete_user"
 
+# Views
+register_route "GET" "/users/view" "get_users_view"
+
+get_users_view() {
+    local json
+    json=$(db_select "users" "id, username, email, is_active")
+    [ -z "$json" ] && json="[]"
+
+    local count
+    count=$(printf '%s' "$json" | jq 'length')
+
+    local -a row_htmls=()
+    local i id username email active_label
+    for (( i=0; i<count; i++ )); do
+        id=$(printf '%s' "$json" | jq -r ".[$i].id")
+        username=$(printf '%s' "$json" | jq -r ".[$i].username")
+        email=$(printf '%s' "$json" | jq -r ".[$i].email // \"\"")
+        if [ "$(printf '%s' "$json" | jq -r ".[$i].is_active")" = "1" ]; then
+            active_label="Active"
+        else
+            active_label="Inactive"
+        fi
+        row_htmls+=("$(render_partial "user_row.html" \
+            "id" "$id" "username" "$username" "email" "$email" "status" "$active_label")")
+    done
+
+    local body
+    body=$(render_view "users_list.html" "users" "row_htmls" "title" "User List" "count" "$count")
+    http_response "200 OK" "text/html" "$body"
+}
+
 get_users() {
     local result
     result=$(db_select "users" "id, username, email, is_active")
