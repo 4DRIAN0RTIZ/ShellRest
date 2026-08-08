@@ -1,19 +1,14 @@
 #!/bin/bash
 
+source "$(dirname "${BASH_SOURCE[0]}")/../shellrest/models/orders.sh"
+
 register_route "GET"  "/orders"      "get_orders"
 register_route "GET"  "/orders/{id}" "get_order"
 register_route "POST" "/orders"      "post_orders"
 
 get_orders() {
     local result
-    result=$(db_raw_query "
-        SELECT o.id, u.username AS customer, p.name AS product,
-               o.quantity, o.order_date
-        FROM orders o
-        JOIN users    u ON u.id = o.user_id
-        JOIN products p ON p.id = o.product_id
-        ORDER BY o.order_date DESC;
-    ")
+    result=$(orders_find_all)
     [ -z "$result" ] && result="[]"
     http_response "200 OK" "application/json" "$result"
 }
@@ -22,14 +17,7 @@ get_order() {
     local id="$1"
     validate_path_param "$id" || return
     local result
-    result=$(db_raw_query "
-        SELECT o.id, u.username AS customer, p.name AS product,
-               o.quantity, o.order_date
-        FROM orders o
-        JOIN users    u ON u.id = o.user_id
-        JOIN products p ON p.id = o.product_id
-        WHERE o.id = $id;
-    ")
+    result=$(orders_find "$id")
     if [ -z "$result" ] || [ "$result" = "[]" ]; then
         http_response "404 Not Found" "application/json" "$(json_error "Order not found")"
     else
@@ -51,10 +39,8 @@ post_orders() {
     product_id=$(get_json_field "$body" "product_id")
     quantity=$(get_json_field "$body" "quantity")
 
-    db_insert "orders" "user_id, product_id, quantity, order_date" \
-        "$user_id, $product_id, $quantity, datetime('now')"
     local id
-    id=$(db_get_last_insert_id)
+    id=$(orders_create "$user_id" "$product_id" "$quantity")
     http_response "201 Created" "application/json" \
-        "$(db_select "orders" "id, user_id, product_id, quantity, order_date" "id = $id")"
+        "$(orders_find_plain "$id")"
 }

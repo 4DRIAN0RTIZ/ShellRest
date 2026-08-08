@@ -84,10 +84,6 @@ db_exists() {
     [ "${count:-0}" -gt 0 ]
 }
 
-db_get_last_insert_id() {
-    execute_query "SELECT last_insert_rowid();"
-}
-
 safe_sql_string() {
     printf "'%s'" "$(escape_sql "$1")"
 }
