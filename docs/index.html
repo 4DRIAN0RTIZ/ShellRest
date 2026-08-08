@@ -62,20 +62,21 @@
     <a class="nav-item" href="#database"><span class="nav-prefix">07</span>Database</a>
     <a class="nav-item" href="#validation"><span class="nav-prefix">08</span>Validation</a>
     <a class="nav-item" href="#middleware"><span class="nav-prefix">09</span>Middleware</a>
+    <a class="nav-item" href="#views"><span class="nav-prefix">10</span>Views / Templates</a>
   </div>
 
   <div class="nav-group">
     <div class="nav-group-title">schema</div>
-    <a class="nav-item" href="#migrations"><span class="nav-prefix">10</span>Migrations</a>
-    <a class="nav-item" href="#schema"><span class="nav-prefix">11</span>Schema Builder</a>
+    <a class="nav-item" href="#migrations"><span class="nav-prefix">11</span>Migrations</a>
+    <a class="nav-item" href="#schema"><span class="nav-prefix">12</span>Schema Builder</a>
   </div>
 
   <div class="nav-group">
     <div class="nav-group-title">reference</div>
-    <a class="nav-item" href="#utils"><span class="nav-prefix">12</span>JSON Utilities</a>
-    <a class="nav-item" href="#example"><span class="nav-prefix">13</span>Full Example</a>
-    <a class="nav-item" href="#apiref"><span class="nav-prefix">14</span>API Reference</a>
-    <a class="nav-item" href="#changelog"><span class="nav-prefix">15</span>Changelog</a>
+    <a class="nav-item" href="#utils"><span class="nav-prefix">13</span>JSON Utilities</a>
+    <a class="nav-item" href="#example"><span class="nav-prefix">14</span>Full Example</a>
+    <a class="nav-item" href="#apiref"><span class="nav-prefix">15</span>API Reference</a>
+    <a class="nav-item" href="#changelog"><span class="nav-prefix">16</span>Changelog</a>
   </div>
 </nav>
 
@@ -271,13 +272,20 @@ get_health() {
 <span class="tree-file">│   ├── <span class="tree-key">database.sh</span>   <span class="tree-desc" data-i18n="tree.database"># execute_query, escape_sql</span></span>
 <span class="tree-file">│   ├── <span class="tree-key">middleware.sh</span> <span class="tree-desc" data-i18n="tree.middleware"># add_middleware, run_middleware, built-in middlewares</span></span>
 <span class="tree-file">│   ├── <span class="tree-key">migration.sh</span>  <span class="tree-desc" data-i18n="tree.migration"># Schema builder + migration tracking</span></span>
-<span class="tree-file">│   └── <span class="tree-key">utils.sh</span>      <span class="tree-desc" data-i18n="tree.utils"># db_select/insert/update/delete/join, json_error</span></span>
-<span class="tree-file">│   └── <span class="tree-key">validation.sh</span><span class="tree-desc" data-i18n="tree.validation"># validate_json, validate_email, validate_integer…</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">utils.sh</span>      <span class="tree-desc" data-i18n="tree.utils"># db_select/insert/update/delete/join, json_error</span></span>
+<span class="tree-file">│   ├── <span class="tree-key">validation.sh</span><span class="tree-desc" data-i18n="tree.validation"># validate_json, validate_email, validate_integer…</span></span>
+<span class="tree-file">│   └── <span class="tree-key">template.sh</span>  <span class="tree-desc" data-i18n="tree.template"># render_view, render_partial — Handlebars-like engine</span></span>
+<span class="tree-dir">├── shellrest/models/  <span class="tree-desc" data-i18n="tree.models"># Data access layer (one file per resource)</span></span>
+<span class="tree-file">│   ├── users.sh</span>
+<span class="tree-file">│   ├── products.sh</span>
+<span class="tree-file">│   └── orders.sh</span>
 <span class="tree-dir">├── routes/            <span class="tree-desc" data-i18n="tree.routes"># Route handlers (auto-loaded)</span></span>
 <span class="tree-file">│   ├── root.sh</span>
 <span class="tree-file">│   ├── users.sh</span>
 <span class="tree-file">│   ├── products.sh</span>
 <span class="tree-file">│   └── orders.sh</span>
+<span class="tree-dir">├── views/             <span class="tree-desc" data-i18n="tree.views"># Templates rendered by render_view/render_partial (optional)</span></span>
+<span class="tree-file">│   └── partials/</span>
 <span class="tree-dir">└── migrations/        <span class="tree-desc" data-i18n="tree.migrations-dir"># Migration files (ordered by timestamp)</span></span>
 <span class="tree-file">    ├── 20250915_220501_users.sh</span>
 <span class="tree-file">    ├── 20250915_223331_products.sh</span>
@@ -1191,7 +1199,90 @@ add_middleware "rate_limit_middleware"</code></pre>
   </section>
 
   <!-- ─────────────────────────────────
-       10 MIGRATIONS
+       10 VIEWS / TEMPLATES
+  ────────────────────────────────── -->
+  <section id="views">
+    <h2 data-i18n="views.h2">Views / Templates</h2>
+
+    <p data-i18n-html="views.p1">Minimal Handlebars-like template engine in <code>template.sh</code>. Reads <code>.html</code> files from a <code>views/</code> directory and interpolates values via <code>render_view</code>/<code>render_partial</code>. Optional — HTTP handlers can keep returning raw JSON if they don't need HTML output.</p>
+
+    <table class="env-table">
+      <thead>
+        <tr><th data-i18n="views.th-token">Token</th><th data-i18n="views.th-desc">Behavior</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="env-key">{{key}}</td>
+          <td class="env-desc" data-i18n="views.token-scalar">Scalar interpolation, HTML-escaped</td>
+        </tr>
+        <tr>
+          <td class="env-key">{{{key}}}</td>
+          <td class="env-desc" data-i18n="views.token-raw">Scalar interpolation, raw — trusted fragments only</td>
+        </tr>
+        <tr>
+          <td class="env-key">{{#each name}}...{{/each}}</td>
+          <td class="env-desc" data-i18n="views.token-each">Loops over a Bash array passed by name</td>
+        </tr>
+        <tr>
+          <td class="env-key">{{.}} / {{{.}}}</td>
+          <td class="env-desc" data-i18n="views.token-item">Current loop item inside <code>{{#each}}</code>, escaped / raw</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">render_view</span>
+        <span class="fn-sig">(template_file, ...key value) → string</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc" data-i18n-html="views.render-view-desc">Reads <code>views/&lt;template_file&gt;</code> (dir configurable via <code>VIEWS_DIR</code>, default <code>views</code>) and applies the key/value pairs. Pairs whose value is an array name are treated as <code>{{#each}}</code> data.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span><button class="term-copy" onclick="copyCode(this)">copy</button></div>
+          <div class="term-body">
+            <pre><code class="language-bash"># views/user.html
+# &lt;h1&gt;{{username}}&lt;/h1&gt;
+# &lt;ul&gt;{{#each posts}}&lt;li&gt;{{.}}&lt;/li&gt;{{/each}}&lt;/ul&gt;
+
+get_user() {
+    local id="$1"
+    local username="alice"
+    local posts=("first post" "second post")
+
+    http_response "200 OK" "text/html" \
+        "$(render_view "user.html" "username" "$username" "posts" "posts")"
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fn-card">
+      <div class="fn-header">
+        <span class="fn-name">render_partial</span>
+        <span class="fn-sig">(partial_file, ...key value) → string</span>
+      </div>
+      <div class="fn-body">
+        <div class="fn-desc" data-i18n-html="views.render-partial-desc">Same interpolation rules as <code>render_view</code>, but reads from <code>views/partials/&lt;partial_file&gt;</code>. Used to compose reusable fragments (headers, cards, rows) into a parent view.</div>
+        <div class="term">
+          <div class="term-bar"><span class="term-dot r"></span><span class="term-dot y"></span><span class="term-dot g"></span><span class="term-title">ejemplo</span></div>
+          <div class="term-body">
+            <pre><code class="language-bash"># views/partials/card.html
+# &lt;div class="card"&gt;{{title}}&lt;/div&gt;
+
+card=$(render_partial "card.html" "title" "$title")</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-warn">
+      <strong>WARN</strong><span data-i18n-html="views.callout">Use <code>{{{key}}}</code> only for values you trust (already-escaped HTML fragments, static strings). Anything derived from user input must go through the default escaped <code>{{key}}</code> form.</span>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────
+       11 MIGRATIONS
   ────────────────────────────────── -->
   <section id="migrations">
     <h2>Migrations</h2>
@@ -1299,7 +1390,7 @@ fi</code></pre>
   </section>
 
   <!-- ─────────────────────────────────
-       11 SCHEMA BUILDER
+       12 SCHEMA BUILDER
   ────────────────────────────────── -->
   <section id="schema">
     <h2>Schema Builder</h2>
@@ -1429,7 +1520,7 @@ fi</code></pre>
   </section>
 
   <!-- ─────────────────────────────────
-       12 JSON UTILITIES
+       13 JSON UTILITIES
   ────────────────────────────────── -->
   <section id="utils">
     <h2>JSON Utilities</h2>
@@ -1475,7 +1566,7 @@ missing=$(get_json_field "$body" "email")      # "" (vacío)</code></pre>
   </section>
 
   <!-- ─────────────────────────────────
-       13 FULL EXAMPLE
+       14 FULL EXAMPLE
   ────────────────────────────────── -->
   <section id="example">
     <h2>Full Example</h2>
@@ -1650,7 +1741,7 @@ curl -X DELETE http://localhost:8082/posts/1</code></pre>
   </section>
 
   <!-- ─────────────────────────────────
-       14 API REFERENCE
+       15 API REFERENCE
   ────────────────────────────────── -->
   <section id="apiref">
     <h2>API Reference</h2>
@@ -1772,12 +1863,10 @@ curl -X DELETE http://localhost:8082/posts/1</code></pre>
   </section>
 
   <!-- ─────────────────────────────────
-       15 CHANGELOG
+       16 CHANGELOG
   ────────────────────────────────── -->
   <section id="changelog">
     <h2>Changelog</h2>
-
-    <p data-i18n="changelog.p1">Latest release notes, generated from Conventional Commits.</p>
 
     <div id="changelog-content" style="margin-top:20px;"></div>
 

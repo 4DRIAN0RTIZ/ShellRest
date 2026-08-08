@@ -36,7 +36,10 @@ const TRANSLATIONS = {
     'tree.migration': '# Schema builder + migration tracking',
     'tree.utils': '# db_select/insert/update/delete/join, json_error',
     'tree.validation': '# validate_json, validate_email, validate_integer…',
+    'tree.template': '# render_view, render_partial — Handlebars-like engine',
+    'tree.models': '# Data access layer (one file per resource)',
     'tree.routes': '# Route handlers (auto-loaded)',
+    'tree.views': '# Templates rendered by render_view/render_partial (optional)',
     'tree.migrations-dir': '# Migration files (ordered by timestamp)',
 
     // 04 Configuration
@@ -128,13 +131,26 @@ const TRANSLATIONS = {
     'mw.pipe-request': 'Request',
     'mw.pipe-auth': 'auth_middleware (opt)',
 
-    // 10 Migrations
+    // 10 Views / Templates
+    'views.h2': 'Views / Templates',
+    'views.p1': 'Minimal Handlebars-like template engine in <code>template.sh</code>. Reads <code>.html</code> files from a <code>views/</code> directory and interpolates values via <code>render_view</code>/<code>render_partial</code>. Optional — HTTP handlers can keep returning raw JSON if they don\'t need HTML output.',
+    'views.th-token': 'Token',
+    'views.th-desc': 'Behavior',
+    'views.token-scalar': 'Scalar interpolation, HTML-escaped',
+    'views.token-raw': 'Scalar interpolation, raw — trusted fragments only',
+    'views.token-each': 'Loops over a Bash array passed by name',
+    'views.token-item': 'Current loop item inside <code>{{#each}}</code>, escaped / raw',
+    'views.render-view-desc': 'Reads <code>views/&lt;template_file&gt;</code> (dir configurable via <code>VIEWS_DIR</code>, default <code>views</code>) and applies the key/value pairs. Pairs whose value is an array name are treated as <code>{{#each}}</code> data.',
+    'views.render-partial-desc': 'Same interpolation rules as <code>render_view</code>, but reads from <code>views/partials/&lt;partial_file&gt;</code>. Used to compose reusable fragments (headers, cards, rows) into a parent view.',
+    'views.callout': 'Use <code>{{{key}}}</code> only for values you trust (already-escaped HTML fragments, static strings). Anything derived from user input must go through the default escaped <code>{{key}}</code> form.',
+
+    // 11 Migrations
     'mg.p1': 'The migration system tracks which scripts have already been executed in the SQLite <code>migrations</code> table. Each migration has <code>up()</code> and <code>down()</code> functions.',
     'mg.h3-commands': 'migrate.sh commands',
     'mg.h3-create': 'Create a migration',
     'mg.create-p': 'The script generates a timestamped file in <code>migrations/</code> ready to edit:',
 
-    // 11 Schema Builder
+    // 12 Schema Builder
     'schema.p1': 'Helpers that generate DDL SQL fragments. Used inside migration <code>up()</code> functions.',
     'schema.h3-constraints': 'Constraints and Indexes',
     'schema.th-fn': 'Function',
@@ -144,17 +160,17 @@ const TRANSLATIONS = {
     'schema.timestamps-desc': 'no parameters — adds both',
     'schema.datetime-desc': '(name, default="", nullable=true) — use "now" for CURRENT_TIMESTAMP',
 
-    // 12 JSON Utilities
+    // 13 JSON Utilities
     'utils.get-field-desc': 'Extracts a field from the body JSON. Returns empty if the field doesn\'t exist or is <code>null</code>.',
     'utils.get-required-desc': 'Like <code>get_json_field</code> but returns 1 if the field is empty. Useful combined with <code>||</code>.',
 
-    // 13 Full Example
+    // 14 Full Example
     'example.p1': 'Complete CRUD for posts with validations, JOIN and migration.',
     'example.h3-migration': 'Migration',
     'example.h3-handler': 'Route handler',
     'example.h3-test': 'Test with curl',
 
-    // 14 API Reference
+    // 15 API Reference
     'apiref.p1': 'Endpoints available in the default installation.',
     'apiref.th-method': 'Method',
     'apiref.th-response': 'Response',
@@ -174,8 +190,7 @@ const TRANSLATIONS = {
     'apiref.orders-get': 'Get an order by ID',
     'apiref.orders-create': 'Create an order',
 
-    // 15 Changelog
-    'changelog.p1': 'Latest release notes, generated from Conventional Commits.',
+    // 16 Changelog
     'changelog.empty': 'No changelog entries yet.',
     'changelog.full': 'Full history: ',
   },
@@ -216,7 +231,10 @@ const TRANSLATIONS = {
     'tree.migration': '# Schema builder + migration tracking',
     'tree.utils': '# db_select/insert/update/delete/join, json_error',
     'tree.validation': '# validate_json, validate_email, validate_integer…',
+    'tree.template': '# render_view, render_partial — engine tipo Handlebars',
+    'tree.models': '# Capa de acceso a datos (un archivo por recurso)',
     'tree.routes': '# Handlers de rutas (carga automática)',
+    'tree.views': '# Templates renderizados por render_view/render_partial (opcional)',
     'tree.migrations-dir': '# Archivos de migración (ordenados por timestamp)',
 
     // 04 Configuration
@@ -308,13 +326,26 @@ const TRANSLATIONS = {
     'mw.pipe-request': 'Request',
     'mw.pipe-auth': 'auth_middleware (opt)',
 
-    // 10 Migrations
+    // 10 Views / Templates
+    'views.h2': 'Views / Templates',
+    'views.p1': 'Engine de templates tipo Handlebars minimal en <code>template.sh</code>. Lee archivos <code>.html</code> desde un directorio <code>views/</code> e interpola valores vía <code>render_view</code>/<code>render_partial</code>. Opcional — los handlers HTTP pueden seguir devolviendo JSON crudo si no necesitan salida HTML.',
+    'views.th-token': 'Token',
+    'views.th-desc': 'Comportamiento',
+    'views.token-scalar': 'Interpolación escalar, HTML-escaped',
+    'views.token-raw': 'Interpolación escalar, raw — solo fragmentos confiables',
+    'views.token-each': 'Itera sobre un array Bash pasado por nombre',
+    'views.token-item': 'Item actual del loop dentro de <code>{{#each}}</code>, escaped / raw',
+    'views.render-view-desc': 'Lee <code>views/&lt;template_file&gt;</code> (dir configurable vía <code>VIEWS_DIR</code>, default <code>views</code>) y aplica los pares clave/valor. Los pares cuyo valor es un nombre de array se tratan como data de <code>{{#each}}</code>.',
+    'views.render-partial-desc': 'Mismas reglas de interpolación que <code>render_view</code>, pero lee desde <code>views/partials/&lt;partial_file&gt;</code>. Se usa para componer fragmentos reutilizables (headers, cards, filas) dentro de una view padre.',
+    'views.callout': 'Usar <code>{{{key}}}</code> solo con valores confiables (fragmentos HTML ya escapados, strings estáticos). Todo lo derivado de input de usuario debe pasar por la forma escaped por defecto <code>{{key}}</code>.',
+
+    // 11 Migrations
     'mg.p1': 'El sistema de migraciones trackea qué scripts ya se ejecutaron en la tabla <code>migrations</code> de SQLite. Cada migración tiene funciones <code>up()</code> y <code>down()</code>.',
     'mg.h3-commands': 'Comandos de migrate.sh',
     'mg.h3-create': 'Crear una migración',
     'mg.create-p': 'El script genera un archivo con timestamp en <code>migrations/</code> listo para editar:',
 
-    // 11 Schema Builder
+    // 12 Schema Builder
     'schema.p1': 'Helpers que generan fragmentos de DDL SQL. Se usan dentro de las funciones <code>up()</code> de las migraciones.',
     'schema.h3-constraints': 'Constraints e Indexes',
     'schema.th-fn': 'Función',
@@ -324,17 +355,17 @@ const TRANSLATIONS = {
     'schema.timestamps-desc': 'sin parámetros — agrega ambas',
     'schema.datetime-desc': '(name, default="", nullable=true) — usa "now" para CURRENT_TIMESTAMP',
 
-    // 12 JSON Utilities
+    // 13 JSON Utilities
     'utils.get-field-desc': 'Extrae un campo del JSON del body. Retorna vacío si el campo no existe o es <code>null</code>.',
     'utils.get-required-desc': 'Como <code>get_json_field</code> pero retorna 1 si el campo está vacío. Útil en combinación con <code>||</code>.',
 
-    // 13 Full Example
+    // 14 Full Example
     'example.p1': 'CRUD completo de posts con validaciones, JOIN y migración.',
     'example.h3-migration': 'Migración',
     'example.h3-handler': 'Route handler',
     'example.h3-test': 'Test con curl',
 
-    // 14 API Reference
+    // 15 API Reference
     'apiref.p1': 'Endpoints disponibles en la instalación por defecto.',
     'apiref.th-method': 'Método',
     'apiref.th-response': 'Respuesta',
@@ -354,8 +385,7 @@ const TRANSLATIONS = {
     'apiref.orders-get': 'Obtiene una orden por ID',
     'apiref.orders-create': 'Crea una orden',
 
-    // 15 Changelog
-    'changelog.p1': 'Notas de la última release, generadas desde Conventional Commits.',
+    // 16 Changelog
     'changelog.empty': 'Sin entradas de changelog todavía.',
     'changelog.full': 'Historial completo: ',
   },
