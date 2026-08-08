@@ -98,10 +98,8 @@ put_$singular() {
     local name_field
     name_field=\$(get_json_field "\$body" "name")
 
-    db_update "$name" "name = \$(safe_sql_string "\$name_field")" "id = \$id"
-
     local changes
-    changes=\$(db_get_changes)
+    changes=\$(db_update "$name" "name = \$(safe_sql_string "\$name_field")" "id = \$id")
     if [ "\${changes:-0}" -gt 0 ]; then
         http_response "200 OK" "application/json" "\$(db_select "$name" "*" "id = \$id")"
     else
@@ -112,9 +110,8 @@ put_$singular() {
 delete_$singular() {
     local id="\$1"
     validate_path_param "\$id" || return
-    db_delete "$name" "id = \$id"
     local changes
-    changes=\$(db_get_changes)
+    changes=\$(db_delete "$name" "id = \$id")
     if [ "\${changes:-0}" -gt 0 ]; then
         http_response "204 No Content" "application/json" ""
     else

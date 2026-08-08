@@ -98,12 +98,10 @@ put_user() {
         return
     fi
 
-    db_update "users" \
-        "username = $(safe_sql_string "$username"), email = $(safe_sql_string "$email")" \
-        "id = $id"
-
     local changes
-    changes=$(db_get_changes)
+    changes=$(db_update "users" \
+        "username = $(safe_sql_string "$username"), email = $(safe_sql_string "$email")" \
+        "id = $id")
     if [ "${changes:-0}" -gt 0 ]; then
         http_response "200 OK" "application/json" \
             "$(db_select "users" "id, username, email, is_active" "id = $id")"
@@ -115,9 +113,8 @@ put_user() {
 delete_user() {
     local id="$1"
     validate_path_param "$id" || return
-    db_delete "users" "id = $id"
     local changes
-    changes=$(db_get_changes)
+    changes=$(db_delete "users" "id = $id")
     if [ "${changes:-0}" -gt 0 ]; then
         http_response "204 No Content" "application/json" ""
     else

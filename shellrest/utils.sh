@@ -49,13 +49,13 @@ db_update() {
     local table="$1"
     local set_clause="$2"
     local where_clause="$3"
-    execute_query "UPDATE $table SET $set_clause WHERE $where_clause;"
+    execute_query "UPDATE $table SET $set_clause WHERE $where_clause; SELECT changes();"
 }
 
 db_delete() {
     local table="$1"
     local where_clause="$2"
-    execute_query "DELETE FROM $table WHERE $where_clause;"
+    execute_query "DELETE FROM $table WHERE $where_clause; SELECT changes();"
 }
 
 db_select() {
@@ -86,10 +86,6 @@ db_exists() {
 
 db_get_last_insert_id() {
     execute_query "SELECT last_insert_rowid();"
-}
-
-db_get_changes() {
-    execute_query "SELECT changes();"
 }
 
 safe_sql_string() {
