@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here.
 
+## [0.5.1] - 2026-08-08
+
+### Bug Fixes
+
+- Return real affected-row count from db_update/db_delete ([20ff5bf](https://github.com/4DRIAN0RTIZ/shellrest/commit/20ff5bfcde56f56b1200b7c7d5a46080e4495b94))
+
+### Refactor
+
+- Extract data access into a model layer ([23d3a2a](https://github.com/4DRIAN0RTIZ/shellrest/commit/23d3a2ad52b71972fb531efaba2b9bb60d2b1a57))
+- Extract data access into a model layer ([5d3102e](https://github.com/4DRIAN0RTIZ/shellrest/commit/5d3102eae4c736366a041ea6ff2aff9fc19479e2))
+- Extract data access into a model layer ([52a2887](https://github.com/4DRIAN0RTIZ/shellrest/commit/52a28874b43e1f34c6c2205edb85a4f582a016e4))
+
 ## [0.5.0] - 2026-07-28
 
 ### Features
