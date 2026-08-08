@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.5.2] - 2026-08-08
+
+### Documentation
+
+- Document template rendering support ([03d2cf0](https://github.com/4DRIAN0RTIZ/shellrest/commit/03d2cf059015541cf67c9878afba8b10ccddf0b6))
+
 ## [0.5.1] - 2026-08-08
 
 ### Bug Fixes
