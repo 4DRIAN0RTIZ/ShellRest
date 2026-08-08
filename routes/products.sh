@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$(dirname "${BASH_SOURCE[0]}")/../shellrest/models/products.sh"
+
 register_route "GET"    "/products"      "get_products"
 register_route "POST"   "/products"      "post_products"
 register_route "GET"    "/products/{id}" "get_product"
@@ -8,7 +10,7 @@ register_route "DELETE" "/products/{id}" "delete_product"
 
 get_products() {
     local result
-    result=$(db_select "products" "id, name, description, price, stock_quantity")
+    result=$(products_find_all)
     [ -z "$result" ] && result="[]"
     http_response "200 OK" "application/json" "$result"
 }
@@ -17,7 +19,7 @@ get_product() {
     local id="$1"
     validate_path_param "$id" || return
     local result
-    result=$(db_select "products" "id, name, description, price, stock_quantity" "id = $id")
+    result=$(products_find "$id")
     if [ -z "$result" ] || [ "$result" = "[]" ]; then
         http_response "404 Not Found" "application/json" "$(json_error "Product not found")"
     else
@@ -40,12 +42,10 @@ post_products() {
     stock_quantity=$(get_json_field "$body" "stock_quantity")
     stock_quantity="${stock_quantity:-0}"
 
-    db_insert "products" "name, description, price, stock_quantity" \
-        "$(safe_sql_string "$name"), $(safe_sql_string "$description"), $price, $stock_quantity"
     local id
-    id=$(db_get_last_insert_id)
+    id=$(products_create "$name" "$description" "$price" "$stock_quantity")
     http_response "201 Created" "application/json" \
-        "$(db_select "products" "id, name, description, price, stock_quantity" "id = $id")"
+        "$(products_find "$id")"
 }
 
 put_product() {
@@ -64,15 +64,11 @@ put_product() {
     stock_quantity=$(get_json_field "$body" "stock_quantity")
     stock_quantity="${stock_quantity:-0}"
 
-    db_update "products" \
-        "name = $(safe_sql_string "$name"), description = $(safe_sql_string "$description"), price = $price, stock_quantity = $stock_quantity" \
-        "id = $id"
-
     local changes
-    changes=$(db_get_changes)
+    changes=$(products_update "$id" "$name" "$description" "$price" "$stock_quantity")
     if [ "${changes:-0}" -gt 0 ]; then
         http_response "200 OK" "application/json" \
-            "$(db_select "products" "id, name, description, price, stock_quantity" "id = $id")"
+            "$(products_find "$id")"
     else
         http_response "404 Not Found" "application/json" "$(json_error "Product not found")"
     fi
@@ -81,9 +77,8 @@ put_product() {
 delete_product() {
     local id="$1"
     validate_path_param "$id" || return
-    db_delete "products" "id = $id"
     local changes
-    changes=$(db_get_changes)
+    changes=$(products_delete "$id")
     if [ "${changes:-0}" -gt 0 ]; then
         http_response "204 No Content" "application/json" ""
     else
