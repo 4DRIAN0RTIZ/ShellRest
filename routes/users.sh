@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "$(dirname "${BASH_SOURCE[0]}")/../shellrest/models/users.sh"
+
 register_route "GET"    "/users"      "get_users"
 register_route "POST"   "/users"      "post_users"
 register_route "GET"    "/users/{id}" "get_user"
@@ -11,7 +13,7 @@ register_route "GET" "/users/view" "get_users_view"
 
 get_users_view() {
     local json
-    json=$(db_select "users" "id, username, email, is_active")
+    json=$(users_find_all)
     [ -z "$json" ] && json="[]"
 
     local count
@@ -39,7 +41,7 @@ get_users_view() {
 
 get_users() {
     local result
-    result=$(db_select "users" "id, username, email, is_active")
+    result=$(users_find_all)
     [ -z "$result" ] && result="[]"
     http_response "200 OK" "application/json" "$result"
 }
@@ -48,7 +50,7 @@ get_user() {
     local id="$1"
     validate_path_param "$id" || return
     local result
-    result=$(db_select "users" "id, username, email, is_active" "id = $id")
+    result=$(users_find "$id")
     if [ -z "$result" ] || [ "$result" = "[]" ]; then
         http_response "404 Not Found" "application/json" "$(json_error "User not found")"
     else
@@ -74,10 +76,9 @@ post_users() {
     fi
 
     local id
-    id=$(db_insert "users" "username, email" \
-        "$(safe_sql_string "$username"), $(safe_sql_string "$email")")
+    id=$(users_create "$username" "$email")
     http_response "201 Created" "application/json" \
-        "$(db_select "users" "id, username, email, is_active" "id = $id")"
+        "$(users_find "$id")"
 }
 
 put_user() {
@@ -99,12 +100,10 @@ put_user() {
     fi
 
     local changes
-    changes=$(db_update "users" \
-        "username = $(safe_sql_string "$username"), email = $(safe_sql_string "$email")" \
-        "id = $id")
+    changes=$(users_update "$id" "$username" "$email")
     if [ "${changes:-0}" -gt 0 ]; then
         http_response "200 OK" "application/json" \
-            "$(db_select "users" "id, username, email, is_active" "id = $id")"
+            "$(users_find "$id")"
     else
         http_response "404 Not Found" "application/json" "$(json_error "User not found")"
     fi
@@ -114,7 +113,7 @@ delete_user() {
     local id="$1"
     validate_path_param "$id" || return
     local changes
-    changes=$(db_delete "users" "id = $id")
+    changes=$(users_delete "$id")
     if [ "${changes:-0}" -gt 0 ]; then
         http_response "204 No Content" "application/json" ""
     else
