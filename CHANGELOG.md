@@ -4,27 +4,24 @@ All notable changes to this project are documented here.
 
 ## [0.5.3] - 2026-08-09
 
-### Chore
-
-- Update unreleased [skip ci] ([33f34dd](https://github.com/4DRIAN0RTIZ/shellrest/commit/33f34dd06a66a7fd259e54820638c2553c59774d))
-
-## [0.5.2] - 2026-08-08
-
 ### CI
 
 - Split changelog/release into develop unreleased and main bump ([25e2bd4](https://github.com/4DRIAN0RTIZ/shellrest/commit/25e2bd43dda005e1e396a1fed35dd48d7374eda0))
 
 ### Chore
 
+- Update unreleased [skip ci] ([33f34dd](https://github.com/4DRIAN0RTIZ/shellrest/commit/33f34dd06a66a7fd259e54820638c2553c59774d))
 - Update unreleased [skip ci] ([0d4e212](https://github.com/4DRIAN0RTIZ/shellrest/commit/0d4e212c6538f1c232265f3c9257fe6149edc902))
-
-### Documentation
-
-- Document template rendering support ([03d2cf0](https://github.com/4DRIAN0RTIZ/shellrest/commit/03d2cf059015541cf67c9878afba8b10ccddf0b6))
 
 ### Features
 
 - Show last-updated date in footer ([d38c95a](https://github.com/4DRIAN0RTIZ/shellrest/commit/d38c95a1762c3624a3887356951f32df5d75c51e))
+
+## [0.5.2] - 2026-08-08
+
+### Documentation
+
+- Document template rendering support ([03d2cf0](https://github.com/4DRIAN0RTIZ/shellrest/commit/03d2cf059015541cf67c9878afba8b10ccddf0b6))
 
 ## [0.5.1] - 2026-08-08
 
@@ -128,5 +125,4 @@ All notable changes to this project are documented here.
 
 - Add project scaffolding script ([4756428](https://github.com/4DRIAN0RTIZ/shellrest/commit/475642899e7cd4fcbdb89b710dc7b9e87262ab7f))
 - Initial release of ShellRest ([3c9afdc](https://github.com/4DRIAN0RTIZ/shellrest/commit/3c9afdc75fc195ab51dc32f09b28b5807d8865c9))
-
 
