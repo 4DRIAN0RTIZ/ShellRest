@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+### Bug Fixes
+
+- Correct v0.5.2/v0.5.3 commit grouping after merge ([0b0387a](https://github.com/4DRIAN0RTIZ/shellrest/commit/0b0387a220bf7c3423b85a10c4df7a63dd6dea5d))
+
+## [0.5.3] - 2026-08-09
+
+### Chore
+
+- Update unreleased [skip ci] ([33f34dd](https://github.com/4DRIAN0RTIZ/shellrest/commit/33f34dd06a66a7fd259e54820638c2553c59774d))
+
 ## [0.5.2] - 2026-08-08
 
 ### CI
