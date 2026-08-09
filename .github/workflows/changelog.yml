@@ -1,8 +1,8 @@
-name: Update changelog
+name: Update unreleased changelog
 
 on:
   push:
-    branches: [main]
+    branches: [develop]
     paths-ignore:
       - CHANGELOG.md
 
@@ -38,5 +38,5 @@ jobs:
             echo "No changelog changes"
             exit 0
           fi
-          git commit -m "chore(changelog): update CHANGELOG.md [skip ci]"
+          git commit -m "chore(changelog): update unreleased [skip ci]"
           git push
