@@ -10,7 +10,12 @@ All notable changes to this project are documented here.
 
 ### Chore
 
+- Update unreleased [skip ci] ([13506ba](https://github.com/4DRIAN0RTIZ/shellrest/commit/13506baae33d3e866176fd03df37a34a776edbd4))
 - Update unreleased [skip ci] ([7c0c4f6](https://github.com/4DRIAN0RTIZ/shellrest/commit/7c0c4f6542e4e01bf77cf9f5bac0b4466d5bf63b))
+
+### Documentation
+
+- Add generated repository wiki ([fa3e0ab](https://github.com/4DRIAN0RTIZ/shellrest/commit/fa3e0ab21492906db7985d897302046414e5b323))
 
 ## [0.5.3] - 2026-08-09
 
