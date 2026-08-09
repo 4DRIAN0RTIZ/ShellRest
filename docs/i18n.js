@@ -193,6 +193,7 @@ const TRANSLATIONS = {
     // 16 Changelog
     'changelog.empty': 'No changelog entries yet.',
     'changelog.full': 'Full history: ',
+    'changelog.updated': 'Last updated: ',
   },
 
   es: {
@@ -388,6 +389,7 @@ const TRANSLATIONS = {
     // 16 Changelog
     'changelog.empty': 'Sin entradas de changelog todavía.',
     'changelog.full': 'Historial completo: ',
+    'changelog.updated': 'Última actualización: ',
   },
 };
 

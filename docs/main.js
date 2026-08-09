@@ -66,6 +66,11 @@ async function loadChangelog() {
       <h3>${escapeHtml(version)} ${date ? `<span class="changelog-date">— ${date}</span>` : ""}</h3>
       ${entries}
     </div>`;
+
+    const footerUpdated = document.getElementById("footer-updated");
+    if (footerUpdated && date) {
+      footerUpdated.textContent = `· ${t('changelog.updated')}${date}`;
+    }
   } catch (e) {
     console.error('Error rendering changelog:', e);
     renderChangelogEmpty(container);
