@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.5.3] - 2026-08-09
+
+### Chore
+
+- Update unreleased [skip ci] ([33f34dd](https://github.com/4DRIAN0RTIZ/shellrest/commit/33f34dd06a66a7fd259e54820638c2553c59774d))
+
 ## [0.5.2] - 2026-08-08
 
 ### CI
