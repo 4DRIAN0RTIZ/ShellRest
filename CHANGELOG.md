@@ -6,10 +6,12 @@ All notable changes to this project are documented here.
 
 ### Bug Fixes
 
+- Drop pipe-encoded milestone from issue title ([442c2d2](https://github.com/4DRIAN0RTIZ/shellrest/commit/442c2d27b452dfca687e3ca65e3c34b09b82730b))
 - Complete issue template and prefix title with [roadmap] ([b913c95](https://github.com/4DRIAN0RTIZ/shellrest/commit/b913c95758c54353bde2a54950e1b0b3e3c3c997))
 
 ### Chore
 
+- Update unreleased [skip ci] ([c71ec1e](https://github.com/4DRIAN0RTIZ/shellrest/commit/c71ec1e849503944e320eaea8b401befe1130dcb))
 - Update unreleased [skip ci] ([89d1611](https://github.com/4DRIAN0RTIZ/shellrest/commit/89d16113668877928ba06a6fcc9823de6317bb49))
 
 ### Features
