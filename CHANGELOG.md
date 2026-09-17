@@ -4,6 +4,14 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Bug Fixes
+
+- Complete issue template and prefix title with [roadmap] ([b913c95](https://github.com/4DRIAN0RTIZ/shellrest/commit/b913c95758c54353bde2a54950e1b0b3e3c3c997))
+
+### Chore
+
+- Update unreleased [skip ci] ([89d1611](https://github.com/4DRIAN0RTIZ/shellrest/commit/89d16113668877928ba06a6fcc9823de6317bb49))
+
 ### Features
 
 - Add public roadmap issue template ([a6275e4](https://github.com/4DRIAN0RTIZ/shellrest/commit/a6275e4c110b0cc9582bbaaaace71b6be6fb743f))
