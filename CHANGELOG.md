@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+### Features
+
+- Add public roadmap issue template ([a6275e4](https://github.com/4DRIAN0RTIZ/shellrest/commit/a6275e4c110b0cc9582bbaaaace71b6be6fb743f))
+
 ## [0.5.5] - 2026-08-09
 
 ### Chore
@@ -19,6 +25,10 @@ All notable changes to this project are documented here.
 
 - Correct v0.5.2/v0.5.3 commit grouping after merge ([0b0387a](https://github.com/4DRIAN0RTIZ/shellrest/commit/0b0387a220bf7c3423b85a10c4df7a63dd6dea5d))
 
+### CI
+
+- Sync develop with main after each version bump ([5e770d8](https://github.com/4DRIAN0RTIZ/shellrest/commit/5e770d8dd0e100fa3143728a65f3621b72f58cd9))
+
 ### Chore
 
 - Update unreleased [skip ci] ([7c0c4f6](https://github.com/4DRIAN0RTIZ/shellrest/commit/7c0c4f6542e4e01bf77cf9f5bac0b4466d5bf63b))
@@ -27,29 +37,22 @@ All notable changes to this project are documented here.
 
 ### CI
 
-- Sync develop with main after each version bump ([5e770d8](https://github.com/4DRIAN0RTIZ/shellrest/commit/5e770d8dd0e100fa3143728a65f3621b72f58cd9))
-
-### Chore
-
-- Update unreleased [skip ci] ([33f34dd](https://github.com/4DRIAN0RTIZ/shellrest/commit/33f34dd06a66a7fd259e54820638c2553c59774d))
-
-## [0.5.2] - 2026-08-08
-
-### CI
-
 - Split changelog/release into develop unreleased and main bump ([25e2bd4](https://github.com/4DRIAN0RTIZ/shellrest/commit/25e2bd43dda005e1e396a1fed35dd48d7374eda0))
 
 ### Chore
 
+- Update unreleased [skip ci] ([33f34dd](https://github.com/4DRIAN0RTIZ/shellrest/commit/33f34dd06a66a7fd259e54820638c2553c59774d))
 - Update unreleased [skip ci] ([0d4e212](https://github.com/4DRIAN0RTIZ/shellrest/commit/0d4e212c6538f1c232265f3c9257fe6149edc902))
-
-### Documentation
-
-- Document template rendering support ([03d2cf0](https://github.com/4DRIAN0RTIZ/shellrest/commit/03d2cf059015541cf67c9878afba8b10ccddf0b6))
 
 ### Features
 
 - Show last-updated date in footer ([d38c95a](https://github.com/4DRIAN0RTIZ/shellrest/commit/d38c95a1762c3624a3887356951f32df5d75c51e))
+
+## [0.5.2] - 2026-08-08
+
+### Documentation
+
+- Document template rendering support ([03d2cf0](https://github.com/4DRIAN0RTIZ/shellrest/commit/03d2cf059015541cf67c9878afba8b10ccddf0b6))
 
 ## [0.5.1] - 2026-08-08
 
